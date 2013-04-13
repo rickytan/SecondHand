@@ -45,7 +45,10 @@ withAccessForCurrentUser:YES];
 - (void)initUI
 {
     [[UINavigationBar appearance] setTintColor:DEFAULT_COLOR];
+    [[UINavigationBar appearance] setBackgroundImage:[[UIImage imageNamed:@"navbg.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 8, 0, 8)]
+                                       forBarMetrics:UIBarMetricsDefault];
     [[UISearchBar appearance] setTintColor:DEFAULT_COLOR];
+    [[UISearchBar appearance] setBackgroundImage:[[UIImage imageNamed:@"navbg.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 8, 0, 8)]];
 }
 
 - (BOOL)application:(UIApplication *)application

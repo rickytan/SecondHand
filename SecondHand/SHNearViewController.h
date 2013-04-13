@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import <MapKit/MapKit.h>
 
 @interface SHNearViewController : UIViewController
-@property (nonatomic, strong) IBOutlet UINavigationBar *navigationBar;
-@property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
+@property (nonatomic, assign) CLLocationDistance radius;
 @end

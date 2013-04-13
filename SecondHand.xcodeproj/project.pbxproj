@@ -36,6 +36,11 @@
 		9CB3A1AD1715C3EA00BA9AB5 /* SHNearViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB3A1AC1715C3EA00BA9AB5 /* SHNearViewController.m */; };
 		9CB3A1AF1715C56200BA9AB5 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB3A1AE1715C56200BA9AB5 /* MapKit.framework */; };
 		9CB3A1B21715D73600BA9AB5 /* SHSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB3A1B11715D73500BA9AB5 /* SHSettingsViewController.m */; };
+		9CB3A1B51717302300BA9AB5 /* navbg.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CB3A1B31717302200BA9AB5 /* navbg.png */; };
+		9CB3A1B61717302300BA9AB5 /* navbg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CB3A1B41717302200BA9AB5 /* navbg@2x.png */; };
+		9CB3A1B91717BA7F00BA9AB5 /* SHProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB3A1B81717BA7E00BA9AB5 /* SHProduct.m */; };
+		9CB3A1BC1717BBFA00BA9AB5 /* SHProductAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB3A1BB1717BBF900BA9AB5 /* SHProductAnnotation.m */; };
+		9CB3A1BF1719301600BA9AB5 /* SHReleaseProductController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB3A1BE1719301600BA9AB5 /* SHReleaseProductController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +81,14 @@
 		9CB3A1AE1715C56200BA9AB5 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		9CB3A1B01715D73500BA9AB5 /* SHSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHSettingsViewController.h; sourceTree = "<group>"; };
 		9CB3A1B11715D73500BA9AB5 /* SHSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHSettingsViewController.m; sourceTree = "<group>"; };
+		9CB3A1B31717302200BA9AB5 /* navbg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = navbg.png; sourceTree = "<group>"; };
+		9CB3A1B41717302200BA9AB5 /* navbg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navbg@2x.png"; sourceTree = "<group>"; };
+		9CB3A1B71717BA7E00BA9AB5 /* SHProduct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHProduct.h; sourceTree = "<group>"; };
+		9CB3A1B81717BA7E00BA9AB5 /* SHProduct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHProduct.m; sourceTree = "<group>"; };
+		9CB3A1BA1717BBF900BA9AB5 /* SHProductAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHProductAnnotation.h; sourceTree = "<group>"; };
+		9CB3A1BB1717BBF900BA9AB5 /* SHProductAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHProductAnnotation.m; sourceTree = "<group>"; };
+		9CB3A1BD1719301500BA9AB5 /* SHReleaseProductController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHReleaseProductController.h; sourceTree = "<group>"; };
+		9CB3A1BE1719301600BA9AB5 /* SHReleaseProductController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHReleaseProductController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +171,12 @@
 				9CB3A1AC1715C3EA00BA9AB5 /* SHNearViewController.m */,
 				9CB3A1B01715D73500BA9AB5 /* SHSettingsViewController.h */,
 				9CB3A1B11715D73500BA9AB5 /* SHSettingsViewController.m */,
+				9CB3A1B71717BA7E00BA9AB5 /* SHProduct.h */,
+				9CB3A1B81717BA7E00BA9AB5 /* SHProduct.m */,
+				9CB3A1BA1717BBF900BA9AB5 /* SHProductAnnotation.h */,
+				9CB3A1BB1717BBF900BA9AB5 /* SHProductAnnotation.m */,
+				9CB3A1BD1719301500BA9AB5 /* SHReleaseProductController.h */,
+				9CB3A1BE1719301600BA9AB5 /* SHReleaseProductController.m */,
 			);
 			path = SecondHand;
 			sourceTree = "<group>";
@@ -200,6 +219,8 @@
 				9CB3A1941715C0C800BA9AB5 /* Default-568h@2x.png */,
 				9CB3A1951715C0C800BA9AB5 /* Default.png */,
 				9CB3A1961715C0C800BA9AB5 /* Default@2x.png */,
+				9CB3A1B31717302200BA9AB5 /* navbg.png */,
+				9CB3A1B41717302200BA9AB5 /* navbg@2x.png */,
 				9CB3A1881715BE5B00BA9AB5 /* settings.png */,
 				9CB3A1891715BE5B00BA9AB5 /* settings@2x.png */,
 			);
@@ -267,6 +288,8 @@
 				9CB3A1971715C0C800BA9AB5 /* Default-568h@2x.png in Resources */,
 				9CB3A1981715C0C800BA9AB5 /* Default.png in Resources */,
 				9CB3A1991715C0C800BA9AB5 /* Default@2x.png in Resources */,
+				9CB3A1B51717302300BA9AB5 /* navbg.png in Resources */,
+				9CB3A1B61717302300BA9AB5 /* navbg@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +304,9 @@
 				9CB3A1421715B45400BA9AB5 /* SHAppDelegate.m in Sources */,
 				9CB3A1AD1715C3EA00BA9AB5 /* SHNearViewController.m in Sources */,
 				9CB3A1B21715D73600BA9AB5 /* SHSettingsViewController.m in Sources */,
+				9CB3A1B91717BA7F00BA9AB5 /* SHProduct.m in Sources */,
+				9CB3A1BC1717BBFA00BA9AB5 /* SHProductAnnotation.m in Sources */,
+				9CB3A1BF1719301600BA9AB5 /* SHReleaseProductController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

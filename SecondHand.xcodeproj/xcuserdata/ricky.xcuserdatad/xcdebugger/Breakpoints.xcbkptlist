@@ -8,12 +8,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "SecondHand/SHNearViewController.m"
-         timestampString = "387306801.086673"
+         timestampString = "387399463.823482"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "23"
-         endingLineNumber = "23"
-         landmarkName = "-initWithNibName:bundle:"
+         startingLineNumber = "158"
+         endingLineNumber = "158"
+         landmarkName = "-mapView:didFailToLocateUserWithError:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>
