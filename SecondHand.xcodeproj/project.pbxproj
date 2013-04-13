@@ -41,6 +41,13 @@
 		9CB3A1B91717BA7F00BA9AB5 /* SHProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB3A1B81717BA7E00BA9AB5 /* SHProduct.m */; };
 		9CB3A1BC1717BBFA00BA9AB5 /* SHProductAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB3A1BB1717BBF900BA9AB5 /* SHProductAnnotation.m */; };
 		9CB3A1BF1719301600BA9AB5 /* SHReleaseProductController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB3A1BE1719301600BA9AB5 /* SHReleaseProductController.m */; };
+		9CB3A1C317193D5900BA9AB5 /* orangeButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CB3A1C117193D5900BA9AB5 /* orangeButton.png */; };
+		9CB3A1C417193D5A00BA9AB5 /* orangeButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CB3A1C217193D5900BA9AB5 /* orangeButton@2x.png */; };
+		9CB3A1C617194D6800BA9AB5 /* placeholder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CB3A1C517194D6700BA9AB5 /* placeholder@2x.png */; };
+		9CB3A1C81719A6F200BA9AB5 /* pin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CB3A1C71719A6F200BA9AB5 /* pin@2x.png */; };
+		9CB3A1CA1719A7D100BA9AB5 /* pin.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CB3A1C91719A7D100BA9AB5 /* pin.png */; };
+		9CB3A1CF1719B05B00BA9AB5 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9CB3A1CC1719B05B00BA9AB5 /* SVProgressHUD.bundle */; };
+		9CB3A1D01719B05B00BA9AB5 /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB3A1CE1719B05B00BA9AB5 /* SVProgressHUD.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -89,6 +96,15 @@
 		9CB3A1BB1717BBF900BA9AB5 /* SHProductAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHProductAnnotation.m; sourceTree = "<group>"; };
 		9CB3A1BD1719301500BA9AB5 /* SHReleaseProductController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHReleaseProductController.h; sourceTree = "<group>"; };
 		9CB3A1BE1719301600BA9AB5 /* SHReleaseProductController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHReleaseProductController.m; sourceTree = "<group>"; };
+		9CB3A1C01719365A00BA9AB5 /* SHConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SHConfig.h; sourceTree = "<group>"; };
+		9CB3A1C117193D5900BA9AB5 /* orangeButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangeButton.png; sourceTree = "<group>"; };
+		9CB3A1C217193D5900BA9AB5 /* orangeButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "orangeButton@2x.png"; sourceTree = "<group>"; };
+		9CB3A1C517194D6700BA9AB5 /* placeholder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "placeholder@2x.png"; sourceTree = "<group>"; };
+		9CB3A1C71719A6F200BA9AB5 /* pin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pin@2x.png"; sourceTree = "<group>"; };
+		9CB3A1C91719A7D100BA9AB5 /* pin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pin.png; sourceTree = "<group>"; };
+		9CB3A1CC1719B05B00BA9AB5 /* SVProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SVProgressHUD.bundle; sourceTree = "<group>"; };
+		9CB3A1CD1719B05B00BA9AB5 /* SVProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVProgressHUD.h; sourceTree = "<group>"; };
+		9CB3A1CE1719B05B00BA9AB5 /* SVProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVProgressHUD.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +144,7 @@
 				9CB3A17F1715BC3B00BA9AB5 /* Resources */,
 				9CB3A1371715B45400BA9AB5 /* SecondHand */,
 				9CB3A1661715B7BF00BA9AB5 /* ShareSDK_v1.2.5 */,
+				9CB3A1CB1719B05B00BA9AB5 /* SVProgressHUD */,
 			);
 			sourceTree = "<group>";
 		};
@@ -165,18 +182,19 @@
 			children = (
 				9CB3A1401715B45400BA9AB5 /* SHAppDelegate.h */,
 				9CB3A1411715B45400BA9AB5 /* SHAppDelegate.m */,
-				9CB3A1381715B45400BA9AB5 /* Supporting Files */,
 				9CB3A1921715C03500BA9AB5 /* SHApplication.xib */,
+				9CB3A1C01719365A00BA9AB5 /* SHConfig.h */,
 				9CB3A1AB1715C3EA00BA9AB5 /* SHNearViewController.h */,
 				9CB3A1AC1715C3EA00BA9AB5 /* SHNearViewController.m */,
-				9CB3A1B01715D73500BA9AB5 /* SHSettingsViewController.h */,
-				9CB3A1B11715D73500BA9AB5 /* SHSettingsViewController.m */,
 				9CB3A1B71717BA7E00BA9AB5 /* SHProduct.h */,
 				9CB3A1B81717BA7E00BA9AB5 /* SHProduct.m */,
 				9CB3A1BA1717BBF900BA9AB5 /* SHProductAnnotation.h */,
 				9CB3A1BB1717BBF900BA9AB5 /* SHProductAnnotation.m */,
 				9CB3A1BD1719301500BA9AB5 /* SHReleaseProductController.h */,
 				9CB3A1BE1719301600BA9AB5 /* SHReleaseProductController.m */,
+				9CB3A1B01715D73500BA9AB5 /* SHSettingsViewController.h */,
+				9CB3A1B11715D73500BA9AB5 /* SHSettingsViewController.m */,
+				9CB3A1381715B45400BA9AB5 /* Supporting Files */,
 			);
 			path = SecondHand;
 			sourceTree = "<group>";
@@ -219,12 +237,27 @@
 				9CB3A1941715C0C800BA9AB5 /* Default-568h@2x.png */,
 				9CB3A1951715C0C800BA9AB5 /* Default.png */,
 				9CB3A1961715C0C800BA9AB5 /* Default@2x.png */,
+				9CB3A1C517194D6700BA9AB5 /* placeholder@2x.png */,
 				9CB3A1B31717302200BA9AB5 /* navbg.png */,
 				9CB3A1B41717302200BA9AB5 /* navbg@2x.png */,
 				9CB3A1881715BE5B00BA9AB5 /* settings.png */,
+				9CB3A1C91719A7D100BA9AB5 /* pin.png */,
+				9CB3A1C71719A6F200BA9AB5 /* pin@2x.png */,
 				9CB3A1891715BE5B00BA9AB5 /* settings@2x.png */,
+				9CB3A1C117193D5900BA9AB5 /* orangeButton.png */,
+				9CB3A1C217193D5900BA9AB5 /* orangeButton@2x.png */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		9CB3A1CB1719B05B00BA9AB5 /* SVProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				9CB3A1CC1719B05B00BA9AB5 /* SVProgressHUD.bundle */,
+				9CB3A1CD1719B05B00BA9AB5 /* SVProgressHUD.h */,
+				9CB3A1CE1719B05B00BA9AB5 /* SVProgressHUD.m */,
+			);
+			path = SVProgressHUD;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -290,6 +323,12 @@
 				9CB3A1991715C0C800BA9AB5 /* Default@2x.png in Resources */,
 				9CB3A1B51717302300BA9AB5 /* navbg.png in Resources */,
 				9CB3A1B61717302300BA9AB5 /* navbg@2x.png in Resources */,
+				9CB3A1C317193D5900BA9AB5 /* orangeButton.png in Resources */,
+				9CB3A1C417193D5A00BA9AB5 /* orangeButton@2x.png in Resources */,
+				9CB3A1C617194D6800BA9AB5 /* placeholder@2x.png in Resources */,
+				9CB3A1C81719A6F200BA9AB5 /* pin@2x.png in Resources */,
+				9CB3A1CA1719A7D100BA9AB5 /* pin.png in Resources */,
+				9CB3A1CF1719B05B00BA9AB5 /* SVProgressHUD.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,6 +346,7 @@
 				9CB3A1B91717BA7F00BA9AB5 /* SHProduct.m in Sources */,
 				9CB3A1BC1717BBFA00BA9AB5 /* SHProductAnnotation.m in Sources */,
 				9CB3A1BF1719301600BA9AB5 /* SHReleaseProductController.m in Sources */,
+				9CB3A1D01719B05B00BA9AB5 /* SVProgressHUD.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

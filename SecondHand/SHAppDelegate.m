@@ -9,11 +9,6 @@
 #import "SHAppDelegate.h"
 #import <Parse/Parse.h>
 
-#define DEFAULT_COLOR [UIColor colorWithRed:0.0\
-                                      green:153.0/255\
-                                       blue:1.0\
-                                      alpha:1.0]
-
 
 
 @implementation SHAppDelegate
@@ -23,6 +18,13 @@
     [_window release];
     [_tabBarController release];
     [super dealloc];
+}
+
+- (void)awakeFromNib
+{
+    [self initParse];
+    [self initUI];
+
 }
 
 - (void)initParse
@@ -44,19 +46,17 @@ withAccessForCurrentUser:YES];
 
 - (void)initUI
 {
-    [[UINavigationBar appearance] setTintColor:DEFAULT_COLOR];
+    //[[UINavigationBar appearance] setTintColor:DEFAULT_COLOR];
     [[UINavigationBar appearance] setBackgroundImage:[[UIImage imageNamed:@"navbg.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 8, 0, 8)]
                                        forBarMetrics:UIBarMetricsDefault];
-    [[UISearchBar appearance] setTintColor:DEFAULT_COLOR];
+    //[[UISearchBar appearance] setTintColor:DEFAULT_COLOR];
     [[UISearchBar appearance] setBackgroundImage:[[UIImage imageNamed:@"navbg.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 8, 0, 8)]];
 }
 
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [self initParse];
-    [self initUI];
-    
+
     /*
      PFLogInViewController *login = [[PFLogInViewController alloc] init];
      login.fields = PFLogInFieldsDefault;

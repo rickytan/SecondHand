@@ -7,7 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MapKit/MapKit.h>
 
 @interface SHReleaseProductController : UITableViewController
-
+{
+    BOOL                     _descriptionEdited;
+    BOOL                     _pendingSaveProduct;
+    BOOL                     _located;
+}
+@property (nonatomic, readonly, retain) UITextView *descriptionField;
+@property (nonatomic, readonly, retain) UITextField *priceField;
+@property (nonatomic, readonly, retain) UITextField *contactField;
+@property (nonatomic, readonly, retain) UITextField *productNameField;
+@property (nonatomic, readonly, retain) UITextField *phoneField;
+@property (nonatomic, readonly, retain) UIButton *productImageButton;
+@property (nonatomic, strong) NSURL *imagePath;
 @end

@@ -10,7 +10,7 @@
 #import "SHProductAnnotation.h"
 #import "SHProduct.h"
 
-@interface SHNearViewController () <UISearchBarDelegate, MKMapViewDelegate>
+@interface SHNearViewController () <UISearchDisplayDelegate, MKMapViewDelegate>
 @property (nonatomic, assign) IBOutlet MKMapView *mapView;
 @property (nonatomic, strong) MKUserTrackingBarButtonItem *trackingItem;
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
@@ -59,14 +59,25 @@
     [item release];
     
     self.navigationItem.leftBarButtonItem = self.trackingItem;
-    self.navigationItem.titleView = self.searchBar;
+    self.navigationItem.titleView = self.searchDisplayController.searchBar;
+    
+}
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (UINavigationController*)navigationController
+{
+    return nil;
 }
 
 #pragma mark - UISearchDisplayController Delegate
@@ -83,39 +94,6 @@
                                      animated:YES];
 }
 
-
-
-#pragma mark - UISearchBar Delegate
-
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
-{
-    [self.navigationItem setLeftBarButtonItem:nil
-                                     animated:YES];
-    [searchBar setShowsCancelButton:YES
-                           animated:YES];
-    [self.navigationController.navigationBar layoutIfNeeded];
-    return YES;
-}
-
-- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
-{
-    [searchBar setShowsCancelButton:NO
-                           animated:YES];
-    [self.navigationItem setLeftBarButtonItem:self.trackingItem
-                                     animated:YES];
-    return YES;
-}
-
-- (void)searchBar:(UISearchBar *)searchBar
-    textDidChange:(NSString *)searchText
-{
-    
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    [searchBar resignFirstResponder];
-}
 
 #pragma mark - MKMapView Delegate
 
