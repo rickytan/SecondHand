@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "SecondHand/SHNearViewController.m"
-         timestampString = "387557458.661811"
+         timestampString = "387564932.755421"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "154"
-         endingLineNumber = "154"
+         startingLineNumber = "195"
+         endingLineNumber = "195"
          landmarkName = "-mapView:didFailToLocateUserWithError:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -20,13 +20,13 @@
          shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "SecondHand/SHReleaseProductController.m"
-         timestampString = "387561979.831512"
+         filePath = "SecondHand/SHNearViewController.m"
+         timestampString = "387564908.080043"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "334"
-         endingLineNumber = "334"
-         landmarkName = "-saveProduct"
+         startingLineNumber = "111"
+         endingLineNumber = "111"
+         landmarkName = "-loadProductsWithLocation:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

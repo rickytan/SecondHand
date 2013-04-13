@@ -88,6 +88,7 @@ PFSignUpViewControllerDelegate>
         
         PFSignUpViewController *signup = [[PFSignUpViewController alloc] init];
         signup.delegate = self;
+        signup.fields = PFSignUpFieldsDefault & (~PFSignUpFieldsEmail);
         signup.signUpView.logo = logoLabel;
         signup.signUpView.usernameField.placeholder = @"用户名";
         signup.signUpView.passwordField.placeholder = @"密码";
@@ -331,10 +332,12 @@ PFSignUpViewControllerDelegate>
                 forKey:@"contact"];
     [product setObject:self.phoneField.text
                 forKey:@"phone"];
-    [product setObject:[NSNumber numberWithDouble:self.location.coordinate.latitude]
-                forKey:@"lat"];
-    [product setObject:[NSNumber numberWithDouble:self.location.coordinate.longitude]
-                forKey:@"lon"];
+    [product setObject:[NSNumber numberWithBool:NO]
+                forKey:@"sold"];
+    PFGeoPoint *location = [PFGeoPoint geoPointWithLocation:self.location];
+    [product setObject:location
+                forKey:@"location"];
+
     PFRelation *relation = [product relationforKey:@"user"];
     [relation addObject:[PFUser currentUser]];
     
@@ -353,6 +356,7 @@ PFSignUpViewControllerDelegate>
                 PFFile *imageFile = [PFFile fileWithName:@"product_image"
                                           contentsAtPath:self.imagePath.absoluteString];
                 [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    self.imagePath = nil;
                     [SVProgressHUD showSuccessWithStatus:@"保存成功！"];
                 }];
             }
@@ -460,7 +464,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-    [self onDismissKeyborad:nil];
+    //[self onDismissKeyborad:nil];
 }
 
 #pragma mark - Table view data source

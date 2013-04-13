@@ -9,13 +9,17 @@
 #import "SHNearViewController.h"
 #import "SHProductAnnotation.h"
 #import "SHProduct.h"
+#import <Parse/Parse.h>
 
 @interface SHNearViewController () <UISearchDisplayDelegate, MKMapViewDelegate>
+
 @property (nonatomic, assign) IBOutlet MKMapView *mapView;
 @property (nonatomic, strong) MKUserTrackingBarButtonItem *trackingItem;
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
+@property (nonatomic, strong) PFQuery *productQuery;
+@property (nonatomic, strong) NSArray *productItems;
 
-- (void)loadProductsWithLocation:(CLLocation*)location;
+- (void)loadProductsWithLocation:(MKCoordinateRegion)region;
 
 @end
 
@@ -80,6 +84,36 @@
     return nil;
 }
 
+#pragma mark - Methods
+
+- (void)loadProductsWithLocation:(MKCoordinateRegion)region
+{
+    [self.productQuery cancel];
+
+    CLLocationDegrees left = region.center.longitude - region.span.longitudeDelta;
+    CLLocationDegrees right = region.center.longitude + region.span.longitudeDelta;
+    CLLocationDegrees top = region.center.latitude + region.span.latitudeDelta;
+    CLLocationDegrees bottom = region.center.latitude - region.span.latitudeDelta;
+    
+    self.productQuery = [PFQuery queryWithClassName:@"Product"];
+    [self.productQuery whereKey:@"location"
+      withinGeoBoxFromSouthwest:[PFGeoPoint geoPointWithLatitude:left
+                                                       longitude:bottom]
+                    toNortheast:[PFGeoPoint geoPointWithLatitude:right
+                                                       longitude:top]];
+    [self.productQuery whereKey:@"sold"
+                     notEqualTo:[NSNumber numberWithBool:YES]];
+    [self.productQuery orderByDescending:@"createAt"];
+
+    [self.productQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (objects) {
+            
+            self.productItems = objects;
+            
+        }
+    }];
+}
+
 #pragma mark - UISearchDisplayController Delegate
 
 - (void) searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
@@ -126,10 +160,18 @@ regionWillChangeAnimated:(BOOL)animated
 - (void)mapView:(MKMapView *)mapView
 didUpdateUserLocation:(MKUserLocation *)userLocation
 {
+    _located = YES;
+    userLocation.title = @"我在这儿！";
     [mapView setRegion:MKCoordinateRegionMakeWithDistance(userLocation.location.coordinate, self.radius, self.radius)
               animated:YES];
-    
-    
+}
+
+- (void)mapView:(MKMapView *)mapView
+regionDidChangeAnimated:(BOOL)animated
+{
+    if (_located) {
+        [self loadProductsWithLocation:self.mapView.region];
+    }
 }
 
 - (MKAnnotationView*)mapView:(MKMapView *)mapView

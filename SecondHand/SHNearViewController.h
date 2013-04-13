@@ -10,5 +10,8 @@
 #import <MapKit/MapKit.h>
 
 @interface SHNearViewController : UIViewController
+{
+    BOOL                     _located;
+}
 @property (nonatomic, assign) CLLocationDistance radius;
 @end
