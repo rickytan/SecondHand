@@ -96,13 +96,16 @@
     CLLocationDegrees bottom = region.center.latitude - region.span.latitudeDelta;
     
     self.productQuery = [PFQuery queryWithClassName:@"Product"];
-    [self.productQuery whereKey:@"location"
-      withinGeoBoxFromSouthwest:[PFGeoPoint geoPointWithLatitude:left
-                                                       longitude:bottom]
-                    toNortheast:[PFGeoPoint geoPointWithLatitude:right
-                                                       longitude:top]];
+    
     [self.productQuery whereKey:@"sold"
                      notEqualTo:[NSNumber numberWithBool:YES]];
+    [self.productQuery whereKey:@"location"
+      withinGeoBoxFromSouthwest:[PFGeoPoint geoPointWithLatitude:bottom
+                                                       longitude:left]
+                    toNortheast:[PFGeoPoint geoPointWithLatitude:top
+                                                       longitude:right]];
+//    [self.productQuery whereKey:@"user"
+//                     notEqualTo:[PFUser currentUser]];
     [self.productQuery orderByDescending:@"createAt"];
 
     [self.productQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -174,6 +177,7 @@ regionDidChangeAnimated:(BOOL)animated
     }
 }
 
+
 - (MKAnnotationView*)mapView:(MKMapView *)mapView
            viewForAnnotation:(id<MKAnnotation>)annotation
 {
@@ -185,6 +189,13 @@ regionDidChangeAnimated:(BOOL)animated
     }
     else {
         [annotationView prepareForReuse];
+    }
+    
+    if (annotation == mapView.userLocation) {
+        annotationView.image = [UIImage imageNamed:@"pin_blue.png"];
+    }
+    else {
+        annotationView.image = [UIImage imageNamed:@"pin_red.png"];
     }
     
     return annotationView;
