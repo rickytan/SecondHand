@@ -12,6 +12,8 @@
 #import <Parse/Parse.h>
 #import "SVProgressHUD.h"
 #import "SHMyProductViewController.h"
+#import "SHProduct.h"
+#import "UIButton+WebCache.h"
 
 
 @interface SHReleaseProductController ()
@@ -271,10 +273,18 @@ PFSignUpViewControllerDelegate>
         _descriptionField = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
         _descriptionField.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
         _descriptionField.text = @"商品描述";
-        _descriptionField.textColor = [UIColor lightGrayColor];
         _descriptionField.delegate = self;
         _descriptionField.inputAccessoryView = [self toolBar];
         _descriptionField.backgroundColor = [UIColor clearColor];
+        
+        if (self.product) {
+            _descriptionField.textColor = [UIColor blackColor];
+            _descriptionEdited = YES;
+            _descriptionField.text = self.product.productDescription;
+        }
+        else {
+            _descriptionField.textColor = [UIColor lightGrayColor];
+        }
     }
     return _descriptionField;
 }
@@ -283,6 +293,7 @@ PFSignUpViewControllerDelegate>
 {
     if (!_phoneField) {
         _phoneField = [self textField];
+        _phoneField.text = self.product.phoneNumber;
         _phoneField.keyboardType = UIKeyboardTypePhonePad;
     }
     return _phoneField;
@@ -292,6 +303,8 @@ PFSignUpViewControllerDelegate>
 {
     if (!_priceField) {
         _priceField = [self textField];
+        if (self.product)
+            _priceField.text = [NSString stringWithFormat:@"%.2f",self.product.price];
         _priceField.keyboardType = UIKeyboardTypeDecimalPad;
     }
     return _priceField;
@@ -301,7 +314,10 @@ PFSignUpViewControllerDelegate>
 {
     if (!_contactField) {
         _contactField  = [self textField];
-        _contactField.text = [PFUser currentUser].username;
+        if (self.product)
+            _contactField.text = self.product.contactName;
+        else
+            _contactField.text = [PFUser currentUser].username;
     }
     return _contactField;
 }
@@ -310,6 +326,7 @@ PFSignUpViewControllerDelegate>
 {
     if (!_productNameField) {
         _productNameField = [self textField];
+        _productNameField.text = self.product.productName;
     }
     return _productNameField;
 }
@@ -334,8 +351,8 @@ PFSignUpViewControllerDelegate>
         _productImageButton.layer.shadowRadius = 2.0f;
         _productImageButton.layer.shadowOpacity = 0.7;
         _productImageButton.layer.shadowColor = [UIColor blackColor].CGColor;
-        [_productImageButton setBackgroundImage:[UIImage imageNamed:@"placeholder.png"]
-                                       forState:UIControlStateNormal];
+        [_productImageButton setBackgroundImageWithURL:self.product.productImageURL
+                                      placeholderImage:[UIImage imageNamed:@"placeholder.png"]];
         [_productImageButton addTarget:self
                                 action:@selector(onImage:)
                       forControlEvents:UIControlEventTouchUpInside];
@@ -362,7 +379,12 @@ PFSignUpViewControllerDelegate>
 - (void)saveProduct
 {
     void (^block)(PFFile *file) = ^(PFFile *file) {
-        PFObject *product = [PFObject objectWithClassName:@"Product"];
+        PFObject *product = nil;
+        if (self.product)
+            product = [PFObject objectWithoutDataWithClassName:@"Product"
+                                                      objectId:self.product.productID];
+        else
+            product = [PFObject objectWithClassName:@"Product"];
         
         if (_descriptionEdited)
             [product setObject:self.descriptionField.text
@@ -508,7 +530,7 @@ didUpdateUserLocation:(MKUserLocation *)userLocation
     _located = YES;
     self.location = userLocation.location;
     userLocation.title = @"我在这儿！";
-    [mapView setRegion:MKCoordinateRegionMakeWithDistance(userLocation.location.coordinate, 1000, 1000)
+    [mapView setRegion:MKCoordinateRegionMakeWithDistance(userLocation.location.coordinate, 500, 500)
               animated:YES];
     [mapView selectAnnotation:userLocation
                      animated:YES];
@@ -757,8 +779,11 @@ didDismissWithButtonIndex:(NSInteger)buttonIndex
 - (void)signUpViewController:(PFSignUpViewController *)signUpController
                didSignUpUser:(PFUser *)user
 {
-    [signUpController.presentedViewController dismissModalViewControllerAnimated:NO];
-    [signUpController dismissModalViewControllerAnimated:YES];
+    [signUpController dismissViewControllerAnimated:YES
+                                         completion:^{
+                                             [_loginController dismissModalViewControllerAnimated:YES];
+                                             _loginController = nil;
+                                         }];
 }
 
 @end

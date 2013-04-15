@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+@interface SHTableViewCell : UITableViewCell
+
+@end
+
 @interface SHMyProductViewController : UITableViewController
 
 @end

@@ -19,6 +19,7 @@
 @property (nonatomic, assign) CLLocationCoordinate2D location;
 @property (nonatomic, strong) NSString *contactName;
 @property (nonatomic, assign) CGFloat price;
+@property (nonatomic, assign, getter = isSold) BOOL sold;
 @property (nonatomic, strong) NSURL *productImageURL;
 
 + (id)productWithObject:(PFObject*)object;

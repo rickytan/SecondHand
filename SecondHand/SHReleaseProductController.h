@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 
+@class SHProduct;
+
 @interface SHReleaseProductController : UITableViewController
 {
     BOOL                     _descriptionEdited;
@@ -22,4 +24,6 @@
 @property (nonatomic, readonly, retain) UITextField *phoneField;
 @property (nonatomic, readonly, retain) UIButton *productImageButton;
 @property (nonatomic, strong) NSData *imageData;
+
+@property (nonatomic, strong) SHProduct *product;
 @end

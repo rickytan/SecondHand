@@ -68,7 +68,7 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        self.radius = 5000.0;
+        
     }
     return self;
 }
@@ -85,6 +85,7 @@
     self.navigationItem.leftBarButtonItem = self.trackingItem;
     self.navigationItem.titleView = self.searchDisplayController.searchBar;
     
+    self.mapView.userTrackingMode = MKUserTrackingModeFollow;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -124,6 +125,9 @@
 
 - (void)loadProductsWithLocation:(MKCoordinateRegion)region
 {
+    if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusAuthorized)
+        return;
+    
     [self.productQuery cancel];
 
     CLLocationDegrees left = region.center.longitude - region.span.longitudeDelta;
@@ -132,11 +136,11 @@
     CLLocationDegrees bottom = region.center.latitude - region.span.latitudeDelta;
     
     if (left < -180.0)
-        left = 180.0;
+        left = -180.0;
     if (right > 180.0)
-        right = 180.0;
-    if (top > 90.0)
-        top = 90.0;
+        right = 179.0;
+    if (top >= 90.0)
+        top = 89.0;
     if (bottom < -90.0)
         bottom = -90.0;
     
@@ -157,6 +161,7 @@
 
     [self.productQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (objects) {
+            
             [self.mapView removeAnnotations:self.annotations];
             [self.annotations removeAllObjects];
             
@@ -170,6 +175,8 @@
             }
             self.productItems = [NSArray arrayWithArray:mutArr];
             [self.mapView addAnnotations:self.annotations];
+            
+            
         }
     }];
 }
@@ -218,8 +225,9 @@ didUpdateUserLocation:(MKUserLocation *)userLocation
 {
     _located = YES;
     userLocation.title = @"我在这儿！";
-    [mapView setRegion:MKCoordinateRegionMakeWithDistance(userLocation.location.coordinate, self.radius, self.radius)
-              animated:YES];
+
+    //[mapView setRegion:MKCoordinateRegionMakeWithDistance(userLocation.location.coordinate, self.radius, self.radius)
+    //          animated:YES];
 }
 
 - (void)mapView:(MKMapView *)mapView

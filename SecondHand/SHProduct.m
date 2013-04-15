@@ -21,6 +21,7 @@
     p.productName = [object valueForKey:@"name"];
     p.contactName = [object valueForKey:@"contact"];
     p.price = [[object objectForKey:@"price"] floatValue];
+    p.sold = [[object objectForKey:@"sold"] boolValue];
 
     CLLocationCoordinate2D loc;
     loc.latitude = ((PFGeoPoint*)[object objectForKey:@"location"]).latitude;

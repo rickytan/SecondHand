@@ -13,5 +13,4 @@
 {
     BOOL                     _located;
 }
-@property (nonatomic, assign) CLLocationDistance radius;
 @end

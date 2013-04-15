@@ -7,9 +7,37 @@
 //
 
 #import "SHMyProductViewController.h"
+#import <Parse/Parse.h>
+#import "UIImageView+WebCache.h"
+#import "SHProduct.h"
+#import "SVProgressHUD.h"
+
+
+@implementation SHTableViewCell
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    CGFloat h = CGRectGetHeight(self.bounds) - 12 * 2;
+    CGFloat w = h;
+    if (self.imageView.image)
+        w = h * self.imageView.image.size.width / self.imageView.image.size.height;
+    self.imageView.frame = CGRectMake(12, 12, w, h);
+    CGRect r = self.textLabel.frame;
+    r.origin.x = CGRectGetMaxX(self.imageView.frame) + 4;
+    self.textLabel.frame = r;
+    
+    r = self.detailTextLabel.frame;
+    r.origin.x = CGRectGetMaxX(self.imageView.frame) + 4;
+    self.detailTextLabel.frame = r;
+}
+
+@end
 
 @interface SHMyProductViewController ()
-
+@property (nonatomic, strong) NSArray *productItems;
+- (void)onSold:(UISwitch*)onoff;
 @end
 
 @implementation SHMyProductViewController
@@ -38,6 +66,8 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    [self loadData];
 }
 
 - (void)didReceiveMemoryWarning
@@ -46,28 +76,111 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)onSold:(UISwitch *)onoff
+{
+    NSUInteger index = onoff.tag;
+    
+    SHProduct *item = [self.productItems objectAtIndex:index];
+    PFObject *obj = [PFObject objectWithoutDataWithClassName:@"Product"
+                                                    objectId:item.productID];
+    [obj setObject:[NSNumber numberWithBool:onoff.isOn]
+            forKey:@"sold"];
+    
+    onoff.enabled = NO;
+    __block UISwitch *block = onoff;
+    
+    [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (!succeeded)
+            block.on = !block.isOn;
+        block.enabled = YES;
+    }];
+    
+}
+
+- (void)loadData
+{
+    static PFQuery *query = nil;
+    
+    [query cancel];
+    
+    [SVProgressHUD showWithStatus:@"加载中..."
+                         maskType:SVProgressHUDMaskTypeClear];
+    
+    query = [PFQuery queryWithClassName:@"Product"];
+    [query whereKey:@"user"
+            equalTo:[PFUser currentUser]];
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (objects) {
+            NSMutableArray *mutArr = [NSMutableArray arrayWithCapacity:objects.count];
+            for (PFObject *obj in objects) {
+                SHProduct *product = [SHProduct productWithObject:obj];
+                [mutArr addObject:product];
+            }
+            self.productItems = [NSArray arrayWithArray:mutArr];
+            [self.tableView reloadData];
+            query = nil;
+            
+            [SVProgressHUD dismiss];
+        }
+    }];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView
+ numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    return self.productItems.count;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 80.0;
+}
+
+- (NSString*)tableView:(UITableView *)tableView
+titleForHeaderInSection:(NSInteger)section
+{
+    return @"商品                                       已售出";
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (!cell) {
+        cell = [[[SHTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                       reuseIdentifier:CellIdentifier] autorelease];
+        cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        UISwitch *sold = [[UISwitch alloc] init];
+        [sold addTarget:self
+                 action:@selector(onSold:)
+       forControlEvents:UIControlEventValueChanged];
+        cell.accessoryView = sold;
+        [sold release];
+    }
     
     // Configure the cell...
+    SHProduct *item = [self.productItems objectAtIndex:indexPath.row];
+    
+    [cell.imageView setImageWithURL:item.productImageURL
+                   placeholderImage:[UIImage imageNamed:@"product-ph.png"]
+                            success:^(UIImage *image, BOOL cached) {
+                                [cell setNeedsLayout];
+                            }
+                            failure:NULL];
+    
+    cell.textLabel.text = item.productName;
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"¥%.2f",item.price];
+    ((UISwitch*)cell.accessoryView).on = item.isSold;
+    cell.accessoryView.tag = indexPath.row;
     
     return cell;
 }
