@@ -13,6 +13,7 @@
 #import "UIButton+WebCache.h"
 #import "UIImageView+WebCache.h"
 #import <Parse/Parse.h>
+#import "SVProgressHUD.h"
 
 @interface SHProductDetailViewController ()
 <UIActionSheetDelegate,
@@ -24,6 +25,7 @@ MFMessageComposeViewControllerDelegate>
 @property (nonatomic, readonly, retain) UIButton *productImageButton;
 - (void)onDismiss:(id)sender;
 - (void)onBuy:(id)sender;
+- (void)onFav:(id)sender;
 - (void)onImage:(id)sender;
 - (void)onRestore:(id)sender;
 @end
@@ -62,10 +64,10 @@ MFMessageComposeViewControllerDelegate>
                                                                     style:UIBarButtonItemStyleBordered
                                                                    target:self
                                                                    action:@selector(onDismiss:)];
-    UIBarButtonItem *buyItem = [[UIBarButtonItem alloc] initWithTitle:@"购买"
-                                                                style:UIBarButtonItemStyleBordered
+    UIBarButtonItem *buyItem = [[UIBarButtonItem alloc] initWithTitle:@"收藏"
+                                                                style:UIBarButtonItemStyleDone
                                                                target:self
-                                                               action:@selector(onBuy:)];
+                                                               action:@selector(onFav:)];
     self.navigationItem.leftBarButtonItem = dismissItem;
     self.navigationItem.rightBarButtonItem = buyItem;
     [dismissItem release], [buyItem release];
@@ -133,6 +135,30 @@ MFMessageComposeViewControllerDelegate>
                                                 otherButtonTitles:@"拨打电话", @"发送短信", nil];
     [actions showInView:self.view];
     [actions release];
+}
+
+- (void)onFav:(id)sender
+{
+    if (![PFUser currentUser].isAuthenticated) {
+        
+        return;
+    }
+    PFObject *obj = [PFObject objectWithClassName:@"Favorite"];
+    PFRelation *rela = [obj relationforKey:@"user"];
+    [rela addObject:[PFUser currentUser]];
+    rela = [obj relationforKey:@"product"];
+    PFObject *prod = [PFObject objectWithoutDataWithClassName:@"Product"
+                                                     objectId:self.product.productID];
+    [rela addObject:prod];
+    
+    [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            [SVProgressHUD showSuccessWithStatus:@"收藏成功！"];
+        }
+        else {
+            [SVProgressHUD showErrorWithStatus:@"收藏失败！"];
+        }
+    }];
 }
 
 - (void)onRestore:(id)sender
@@ -253,7 +279,7 @@ MFMessageComposeViewControllerDelegate>
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
         
-        if (self.product.productDescription)
+        if (self.product.productDescription.length > 0)
             cell.textLabel.text = self.product.productDescription;
         else
             cell.textLabel.text = @"无描述";
@@ -294,6 +320,8 @@ MFMessageComposeViewControllerDelegate>
                 case 3:
                     cell.textLabel.text = @"联系方式：";
                     cell.detailTextLabel.text = self.product.phoneNumber;
+                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                    cell.selectionStyle = UITableViewCellSelectionStyleGray;
                     break;
                 default:
                     break;
@@ -358,14 +386,9 @@ MFMessageComposeViewControllerDelegate>
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     [detailViewController release];
-     */
+    if (indexPath.section == 1 && indexPath.row == 3) {
+        [self onBuy:nil];
+    }
 }
 
 #pragma mark - MFMessage Delegate
@@ -403,6 +426,7 @@ didDismissWithButtonIndex:(NSInteger)buttonIndex
                 if ([MFMessageComposeViewController canSendText]) {
                     MFMessageComposeViewController *message = [[MFMessageComposeViewController alloc] init];
                     message.recipients = @[self.product.phoneNumber];
+                    message.messageComposeDelegate = self;
                     [self presentModalViewController:message
                                             animated:YES];
                     [message release];

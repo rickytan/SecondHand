@@ -12,6 +12,7 @@
 @class PFObject;
 
 @interface SHProduct : NSObject
+@property (nonatomic, strong) NSString *productID;
 @property (nonatomic, strong) NSString *productName;
 @property (nonatomic, strong) NSString *phoneNumber;
 @property (nonatomic, strong) NSString *productDescription;

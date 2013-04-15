@@ -14,6 +14,7 @@
 + (id)productWithObject:(PFObject *)object
 {
     SHProduct *p = [[SHProduct alloc] init];
+    p.productID = object.objectId;
     p.phoneNumber = [object valueForKey:@"phone"];
     p.productDescription = [object valueForKey:@"desc"];
     p.productImageURL = [object valueForKey:@"image"];
