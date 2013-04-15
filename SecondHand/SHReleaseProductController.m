@@ -35,6 +35,7 @@ PFSignUpViewControllerDelegate>
 @property (nonatomic, strong) CLLocation *location;
 
 - (void)onMyProduct:(id)sender;
+- (void)onDismiss:(id)sender;
 - (void)reset;
 - (void)saveProduct;
 @end
@@ -54,8 +55,14 @@ PFSignUpViewControllerDelegate>
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
+        self.title = @"发布商品";
     }
     return self;
+}
+
+- (id)init
+{
+    return [self initWithStyle:UITableViewStyleGrouped];
 }
 
 - (void)viewDidLoad
@@ -68,12 +75,22 @@ PFSignUpViewControllerDelegate>
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
-    UIBarButtonItem *myItem = [[UIBarButtonItem alloc] initWithTitle:@"我的商品"
-                                                               style:UIBarButtonItemStyleBordered
-                                                              target:self
-                                                              action:@selector(onMyProduct:)];
-    self.navigationItem.rightBarButtonItem = myItem;
-    [myItem release];
+    if (!self.product) {
+        UIBarButtonItem *myItem = [[UIBarButtonItem alloc] initWithTitle:@"我的商品"
+                                                                   style:UIBarButtonItemStyleBordered
+                                                                  target:self
+                                                                  action:@selector(onMyProduct:)];
+        self.navigationItem.rightBarButtonItem = myItem;
+        [myItem release];
+    }
+    else {
+        UIBarButtonItem *dismissItem = [[UIBarButtonItem alloc] initWithTitle:@"返回"
+                                                                        style:UIBarButtonItemStyleBordered
+                                                                       target:self
+                                                                       action:@selector(onDismiss:)];
+        self.navigationItem.leftBarButtonItem = dismissItem;
+        [dismissItem release];
+    }
     
     [self.tableView addSubview:self.productImageButton];
     
@@ -176,6 +193,11 @@ PFSignUpViewControllerDelegate>
     [self.navigationController pushViewController:myController
                                          animated:YES];
     [myController release];
+}
+
+- (void)onDismiss:(id)sender
+{
+    [self dismissModalViewControllerAnimated:YES];
 }
 
 - (void)onImage:(id)sender
@@ -371,7 +393,7 @@ PFSignUpViewControllerDelegate>
         _mapView.userTrackingMode = MKUserTrackingModeFollow;
         _mapView.scrollEnabled = NO;
         _mapView.zoomEnabled = NO;
-//        _mapView.layer.cornerRadius = 8.0;
+        //        _mapView.layer.cornerRadius = 8.0;
     }
     return _mapView;
 }
@@ -465,7 +487,10 @@ PFSignUpViewControllerDelegate>
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
-    textField.layer.borderColor = DEFAULT_COLOR.CGColor;
+    textField.layer.borderColor = [UIColor colorWithRed:0
+                                                  green:153.0/255
+                                                   blue:1.0
+                                                  alpha:1.0].CGColor;
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField
@@ -659,8 +684,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
             gradient.locations = @[[NSNumber numberWithFloat:0.0], [NSNumber numberWithFloat:1.0]];
             [cell.contentView.layer addSublayer:gradient];
             gradient.frame = CGRectMake(0, 0, 300, 120);
-//            gradient.cornerRadius = 8.0f;
-//            gradient.masksToBounds = YES;
+            //            gradient.cornerRadius = 8.0f;
+            //            gradient.masksToBounds = YES;
         }
             break;
         case 2:
@@ -692,7 +717,10 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
             break;
         case 3:
             cell.backgroundColor = DEFAULT_COLOR;
-            cell.textLabel.text = @"发布商品";
+            if (!self.product)
+                cell.textLabel.text = @"提交商品";
+            else
+                cell.textLabel.text = @"提交修改";
             cell.textLabel.textColor = [UIColor whiteColor];
             cell.textLabel.highlightedTextColor = [UIColor lightTextColor];
             cell.textLabel.font = [UIFont boldSystemFontOfSize:24];

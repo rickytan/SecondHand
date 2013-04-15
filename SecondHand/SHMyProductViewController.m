@@ -11,6 +11,7 @@
 #import "UIImageView+WebCache.h"
 #import "SHProduct.h"
 #import "SVProgressHUD.h"
+#import "SHReleaseProductController.h"
 
 
 @implementation SHTableViewCell
@@ -158,6 +159,7 @@ titleForHeaderInSection:(NSInteger)section
     if (!cell) {
         cell = [[[SHTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                        reuseIdentifier:CellIdentifier] autorelease];
+        cell.selectionStyle = UITableViewCellSelectionStyleGray;
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
         UISwitch *sold = [[UISwitch alloc] init];
         [sold addTarget:self
@@ -229,13 +231,17 @@ titleForHeaderInSection:(NSInteger)section
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     [detailViewController release];
-     */
+    [tableView deselectRowAtIndexPath:indexPath
+                             animated:YES];
+    
+    SHReleaseProductController *release = [[SHReleaseProductController alloc] init];
+    release.product = [self.productItems objectAtIndex:indexPath.row];
+    release.title = @"修改商品";
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:release];
+    [release release];
+    [self presentModalViewController:nav
+                            animated:YES];
+    [nav release];
 }
 
 @end
