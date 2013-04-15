@@ -24,6 +24,7 @@
 		9C889484171BC4A200995B22 /* publish@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C889483171BC4A200995B22 /* publish@2x.png */; };
 		9C889486171BC4CB00995B22 /* publish.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C889485171BC4CB00995B22 /* publish.png */; };
 		9C889489171BF25800995B22 /* SHMyProductViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C889488171BF25700995B22 /* SHMyProductViewController.m */; };
+		9C88948D171C2DA600995B22 /* SHMyFavViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C88948C171C2DA600995B22 /* SHMyFavViewController.m */; };
 		9CB3A1321715B45400BA9AB5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB3A1311715B45400BA9AB5 /* UIKit.framework */; };
 		9CB3A1341715B45400BA9AB5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB3A1331715B45400BA9AB5 /* Foundation.framework */; };
 		9CB3A1361715B45400BA9AB5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB3A1351715B45400BA9AB5 /* CoreGraphics.framework */; };
@@ -100,6 +101,8 @@
 		9C889487171BF25700995B22 /* SHMyProductViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHMyProductViewController.h; sourceTree = "<group>"; };
 		9C889488171BF25700995B22 /* SHMyProductViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHMyProductViewController.m; sourceTree = "<group>"; };
 		9C88948A171C17BA00995B22 /* Location.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Location.gpx; sourceTree = "<group>"; };
+		9C88948B171C2DA600995B22 /* SHMyFavViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHMyFavViewController.h; sourceTree = "<group>"; };
+		9C88948C171C2DA600995B22 /* SHMyFavViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHMyFavViewController.m; sourceTree = "<group>"; };
 		9CB3A12E1715B45400BA9AB5 /* SecondHand.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SecondHand.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CB3A1311715B45400BA9AB5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		9CB3A1331715B45400BA9AB5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -279,6 +282,8 @@
 				9C889487171BF25700995B22 /* SHMyProductViewController.h */,
 				9C889488171BF25700995B22 /* SHMyProductViewController.m */,
 				9C88948A171C17BA00995B22 /* Location.gpx */,
+				9C88948B171C2DA600995B22 /* SHMyFavViewController.h */,
+				9C88948C171C2DA600995B22 /* SHMyFavViewController.m */,
 			);
 			path = SecondHand;
 			sourceTree = "<group>";
@@ -453,6 +458,7 @@
 				9C88947B171B8D3F00995B22 /* UIImageView+WebCache.m in Sources */,
 				9C889482171B9BDF00995B22 /* SHProductDetailViewController.m in Sources */,
 				9C889489171BF25800995B22 /* SHMyProductViewController.m in Sources */,
+				9C88948D171C2DA600995B22 /* SHMyFavViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
