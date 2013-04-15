@@ -21,5 +21,5 @@
 @property (nonatomic, readonly, retain) UITextField *productNameField;
 @property (nonatomic, readonly, retain) UITextField *phoneField;
 @property (nonatomic, readonly, retain) UIButton *productImageButton;
-@property (nonatomic, strong) NSURL *imagePath;
+@property (nonatomic, strong) NSData *imageData;
 @end

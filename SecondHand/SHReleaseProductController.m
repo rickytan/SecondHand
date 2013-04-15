@@ -324,7 +324,7 @@ PFSignUpViewControllerDelegate>
 
 - (void)saveProduct
 {
-    void (^block)(NSString *imageURL) = ^(NSString *imageURL) {
+    void (^block)(PFFile *file) = ^(PFFile *file) {
         PFObject *product = [PFObject objectWithClassName:@"Product"];
         
         if (_descriptionEdited)
@@ -341,9 +341,10 @@ PFSignUpViewControllerDelegate>
                     forKey:@"contact"];
         [product setObject:self.phoneField.text
                     forKey:@"phone"];
-        if (imageURL)
-            [product setObject:imageURL
+        if (file) {
+            [product setObject:file.url
                         forKey:@"image"];
+        }
         else
             [product setObject:@""
                         forKey:@"image"];
@@ -353,16 +354,8 @@ PFSignUpViewControllerDelegate>
         [product setObject:location
                     forKey:@"location"];
         
-        if (self.imagePath) {
-            NSData *data = [NSData dataWithContentsOfURL:self.imagePath];
-            PFFile *imageFile = [PFFile fileWithData:data];
-            [product addObject:imageFile
-                        forKey:@"imageFile"];
-        }
-        
         PFRelation *relation = [product relationforKey:@"user"];
         [relation addObject:[PFUser currentUser]];
-        
         
         [product saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
@@ -379,15 +372,19 @@ PFSignUpViewControllerDelegate>
         }];
     };
     
-    if (self.imagePath) {
+    if (self.imageData) {
         [SVProgressHUD showWithStatus:@"正在保存..."
                              maskType:SVProgressHUDMaskTypeClear];
         
-        NSData *data = [NSData dataWithContentsOfURL:self.imagePath];
-        PFFile *imageFile = [PFFile fileWithData:data];
+        PFFile *imageFile = [PFFile fileWithData:self.imageData];
         [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            self.imagePath = nil;
-            block(imageFile.url);
+            if (succeeded) {
+                self.imageData = nil;
+                block(imageFile);
+            }
+            else {
+                [SVProgressHUD showErrorWithStatus:@"保存失败！"];
+            }
         }];
     }
     else {
@@ -447,7 +444,6 @@ didDismissWithButtonIndex:(NSInteger)buttonIndex
             picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
             picker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModePhoto;
             picker.cameraFlashMode = UIImagePickerControllerCameraFlashModeAuto;
-            //picker.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
             [self presentModalViewController:picker
                                     animated:YES];
             [picker release];
@@ -477,8 +473,16 @@ didDismissWithButtonIndex:(NSInteger)buttonIndex
 didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
-    NSURL *url = [info objectForKey:UIImagePickerControllerReferenceURL];
-    self.imagePath = url;
+    UIImage *resizedImage = image;
+    CGFloat width = [UIScreen mainScreen].bounds.size.width;
+    CGFloat height = image.size.height / image.size.width * width;
+    if (image.size.width > width) {
+        UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, [UIScreen mainScreen].scale);
+        [image drawInRect:CGRectMake(0, 0, width, height)];
+        resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    }
+    self.imageData = UIImageJPEGRepresentation(resizedImage, 0.75);
     [self.productImageButton setBackgroundImage:image
                                        forState:UIControlStateNormal];
     [picker dismissModalViewControllerAnimated:YES];
@@ -611,6 +615,8 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == 2) {
+        [self onDismissKeyborad:nil];
+        
         if ([self validateFields]) {
             if (_located) {
                 [self saveProduct];
@@ -677,8 +683,8 @@ didDismissWithButtonIndex:(NSInteger)buttonIndex
 - (void)signUpViewController:(PFSignUpViewController *)signUpController
                didSignUpUser:(PFUser *)user
 {
-    [signUpController.presentedViewController dismissModalViewControllerAnimated:YES];
-    //[signUpController dismissModalViewControllerAnimated:YES];
+    [signUpController.presentedViewController dismissModalViewControllerAnimated:NO];
+    [signUpController dismissModalViewControllerAnimated:YES];
 }
 
 @end

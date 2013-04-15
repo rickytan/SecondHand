@@ -12,6 +12,7 @@
 #import <MessageUI/MessageUI.h>
 #import "UIButton+WebCache.h"
 #import "UIImageView+WebCache.h"
+#import <Parse/Parse.h>
 
 @interface SHProductDetailViewController ()
 <UIActionSheetDelegate,
@@ -154,6 +155,9 @@ MFMessageComposeViewControllerDelegate>
 
 - (void)onImage:(id)sender
 {
+    if (!self.product.productImageURL)
+        return;
+    
     _filter = [[UIControl alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _filter.alpha = 0.0;
     _filter.backgroundColor = [UIColor blackColor];
@@ -163,7 +167,7 @@ MFMessageComposeViewControllerDelegate>
     
     CGRect r = self.productImageButton.bounds;
     r = [self.view.window convertRect:r fromView:self.productImageButton];
-    
+
     UIImageView *image = [[UIImageView alloc] initWithFrame:r];
     image.contentMode = UIViewContentModeScaleAspectFill;
     [image setImageWithURL:self.product.productImageURL
@@ -249,7 +253,10 @@ MFMessageComposeViewControllerDelegate>
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
         
-        cell.textLabel.text = self.product.productDescription;
+        if (self.product.productDescription)
+            cell.textLabel.text = self.product.productDescription;
+        else
+            cell.textLabel.text = @"无描述";
         cell.textLabel.font = [UIFont systemFontOfSize:14];
         cell.textLabel.numberOfLines = 0;
         [self.productImageButton setBackgroundImageWithURL:self.product.productImageURL
@@ -260,7 +267,7 @@ MFMessageComposeViewControllerDelegate>
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2
                                        reuseIdentifier:CellIdentifier] autorelease];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }

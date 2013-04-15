@@ -131,6 +131,11 @@
     CLLocationDegrees top = region.center.latitude + region.span.latitudeDelta;
     CLLocationDegrees bottom = region.center.latitude - region.span.latitudeDelta;
     
+    if (top > 90.0)
+        top = 90.0;
+    if (bottom < -90.0)
+        bottom = -90.0;
+    
     self.productQuery = [PFQuery queryWithClassName:@"Product"];
     
     [self.productQuery whereKey:@"sold"
