@@ -131,10 +131,15 @@
     CLLocationDegrees top = region.center.latitude + region.span.latitudeDelta;
     CLLocationDegrees bottom = region.center.latitude - region.span.latitudeDelta;
     
+    if (left < -180.0)
+        left = 180.0;
+    if (right > 180.0)
+        right = 180.0;
     if (top > 90.0)
         top = 90.0;
     if (bottom < -90.0)
         bottom = -90.0;
+    
     
     self.productQuery = [PFQuery queryWithClassName:@"Product"];
     
@@ -145,6 +150,7 @@
                                                        longitude:left]
                     toNortheast:[PFGeoPoint geoPointWithLatitude:top
                                                        longitude:right]];
+    
 //    [self.productQuery whereKey:@"user"
 //                     notEqualTo:[PFUser currentUser]];
     [self.productQuery orderByDescending:@"createAt"];
@@ -267,11 +273,12 @@ calloutAccessoryControlTapped:(UIControl *)control
         
         UIButton *button = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
         annotationView.rightCalloutAccessoryView = button;
+        annotationView.image = [UIImage imageNamed:@"pin_red.png"];
+        annotationView.centerOffset = CGPointMake(0, -annotationView.image.size.height / 2 + 3);
     }
 
     SHProductAnnotation *prod = (SHProductAnnotation*)annotation;
     
-    annotationView.image = [UIImage imageNamed:@"pin_red.png"];
 
     [((UIImageView*)annotationView.leftCalloutAccessoryView) setImageWithURL:prod.product.productImageURL
                                                             placeholderImage:[UIImage imageNamed:@"product-ph.png"]];

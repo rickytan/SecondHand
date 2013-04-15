@@ -60,12 +60,12 @@ MFMessageComposeViewControllerDelegate>
     
     [self.tableView addSubview:self.productImageButton];
     
-    UIBarButtonItem *dismissItem = [[UIBarButtonItem alloc] initWithTitle:@"取消"
+    UIBarButtonItem *dismissItem = [[UIBarButtonItem alloc] initWithTitle:@"返回"
                                                                     style:UIBarButtonItemStyleBordered
                                                                    target:self
                                                                    action:@selector(onDismiss:)];
     UIBarButtonItem *buyItem = [[UIBarButtonItem alloc] initWithTitle:@"收藏"
-                                                                style:UIBarButtonItemStyleDone
+                                                                style:UIBarButtonItemStyleBordered
                                                                target:self
                                                                action:@selector(onFav:)];
     self.navigationItem.leftBarButtonItem = dismissItem;
@@ -153,6 +153,7 @@ MFMessageComposeViewControllerDelegate>
     
     [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
+            self.navigationItem.rightBarButtonItem.title = @"已收藏";
             [SVProgressHUD showSuccessWithStatus:@"收藏成功！"];
         }
         else {
@@ -172,6 +173,7 @@ MFMessageComposeViewControllerDelegate>
                          _detailImage.frame = r;
                      }
                      completion:^(BOOL finished) {
+                         self.view.window.windowLevel = UIWindowLevelNormal;
                          [_filter removeFromSuperview];
                          [_detailImage removeFromSuperview];
                          _filter = nil;
@@ -183,6 +185,7 @@ MFMessageComposeViewControllerDelegate>
 {
     if (!self.product.productImageURL)
         return;
+    self.view.window.windowLevel = UIWindowLevelStatusBar + 1;
     
     _filter = [[UIControl alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _filter.alpha = 0.0;
@@ -386,6 +389,9 @@ MFMessageComposeViewControllerDelegate>
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [tableView deselectRowAtIndexPath:indexPath
+                             animated:YES];
+    
     if (indexPath.section == 1 && indexPath.row == 3) {
         [self onBuy:nil];
     }

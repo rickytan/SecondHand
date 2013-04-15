@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "SecondHand/SHReleaseProductController.m"
-         timestampString = "387695273.116349"
+         timestampString = "387722034.353045"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "687"
-         endingLineNumber = "687"
+         startingLineNumber = "761"
+         endingLineNumber = "761"
          landmarkName = "-signUpViewController:didSignUpUser:"
          landmarkType = "5">
       </FileBreakpoint>

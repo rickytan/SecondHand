@@ -47,6 +47,16 @@ withAccessForCurrentUser:YES];
 - (void)initUI
 {
     //[[UINavigationBar appearance] setTintColor:DEFAULT_COLOR];
+/*
+    [[UIBarButtonItem appearance] setTintColor:[UIColor colorWithRed:48.0/255
+                                                               green:84.0/255
+                                                                blue:140.0/255
+                                                               alpha:1.0]];
+ */
+    [[UINavigationBar appearance] setTintColor:[UIColor colorWithRed:48.0/255
+                                                               green:84.0/255
+                                                                blue:140.0/255
+                                                               alpha:1.0]];
     [[UINavigationBar appearance] setBackgroundImage:[[UIImage imageNamed:@"navbg.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 8, 0, 8)]
                                        forBarMetrics:UIBarMetricsDefault];
     //[[UISearchBar appearance] setTintColor:DEFAULT_COLOR];
