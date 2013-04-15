@@ -11,13 +11,20 @@
 #import <QuartzCore/QuartzCore.h>
 #import <MessageUI/MessageUI.h>
 #import "UIButton+WebCache.h"
+#import "UIImageView+WebCache.h"
 
 @interface SHProductDetailViewController ()
 <UIActionSheetDelegate,
 MFMessageComposeViewControllerDelegate>
+{
+    UIControl               * _filter;
+    UIImageView             * _detailImage;
+}
 @property (nonatomic, readonly, retain) UIButton *productImageButton;
 - (void)onDismiss:(id)sender;
 - (void)onBuy:(id)sender;
+- (void)onImage:(id)sender;
+- (void)onRestore:(id)sender;
 @end
 
 @implementation SHProductDetailViewController
@@ -127,6 +134,54 @@ MFMessageComposeViewControllerDelegate>
     [actions release];
 }
 
+- (void)onRestore:(id)sender
+{
+    [UIView animateWithDuration:0.35
+                     animations:^{
+                         _filter.alpha = 0.0;
+                         CGRect r = self.productImageButton.bounds;
+                         r = [self.view.window convertRect:r
+                                                  fromView:self.productImageButton];
+                         _detailImage.frame = r;
+                     }
+                     completion:^(BOOL finished) {
+                         [_filter removeFromSuperview];
+                         [_detailImage removeFromSuperview];
+                         _filter = nil;
+                         _detailImage = nil;
+                     }];
+}
+
+- (void)onImage:(id)sender
+{
+    _filter = [[UIControl alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    _filter.alpha = 0.0;
+    _filter.backgroundColor = [UIColor blackColor];
+    [_filter addTarget:self
+                action:@selector(onRestore:)
+      forControlEvents:UIControlEventTouchDown];
+    
+    CGRect r = self.productImageButton.bounds;
+    r = [self.view.window convertRect:r fromView:self.productImageButton];
+    
+    UIImageView *image = [[UIImageView alloc] initWithFrame:r];
+    image.contentMode = UIViewContentModeScaleAspectFill;
+    [image setImageWithURL:self.product.productImageURL
+          placeholderImage:[UIImage imageNamed:@"product-ph.png"]];
+    _detailImage = image;
+    
+    [self.view.window addSubview:_filter];
+    [self.view.window addSubview:_detailImage];
+    
+    [UIView animateWithDuration:0.35
+                     animations:^{
+                         _filter.alpha = 0.8;
+                         CGRect r = self.view.window.bounds;
+                         _detailImage.bounds = CGRectMake(0,0,r.size.width,240);
+                         _detailImage.center = self.view.window.center;
+                     }];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -166,7 +221,7 @@ MFMessageComposeViewControllerDelegate>
         case 0:
         {
             CGSize size = [self.product.productDescription sizeWithFont:[UIFont systemFontOfSize:14]
-                                                      constrainedToSize:CGSizeMake(320 - 90 - 20, CGFLOAT_MAX)
+                                                      constrainedToSize:CGSizeMake(320 - 90 - 40, CGFLOAT_MAX)
                                                           lineBreakMode:UILineBreakModeWordWrap];
             h = MAX(80.0,size.height);
         }

@@ -38,7 +38,6 @@
 @property (nonatomic, strong) NSArray *productItems;
 
 - (void)loadProductsWithLocation:(MKCoordinateRegion)region;
-- (void)onProductButton:(id)sender;
 - (void)openCallOut:(id<MKAnnotation>)annotation;
 
 @end

@@ -353,6 +353,13 @@ PFSignUpViewControllerDelegate>
         [product setObject:location
                     forKey:@"location"];
         
+        if (self.imagePath) {
+            NSData *data = [NSData dataWithContentsOfURL:self.imagePath];
+            PFFile *imageFile = [PFFile fileWithData:data];
+            [product addObject:imageFile
+                        forKey:@"imageFile"];
+        }
+        
         PFRelation *relation = [product relationforKey:@"user"];
         [relation addObject:[PFUser currentUser]];
         
