@@ -22,7 +22,9 @@ CLLocationManagerDelegate,
 UIAlertViewDelegate,
 PFLogInViewControllerDelegate,
 PFSignUpViewControllerDelegate>
-
+{
+    PFLogInViewController                   * _loginController;
+}
 @property (nonatomic, readonly, retain) CLLocationManager *locationManager;
 @property (nonatomic, strong) CLLocation *location;
 
@@ -67,7 +69,7 @@ PFSignUpViewControllerDelegate>
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -116,7 +118,7 @@ PFSignUpViewControllerDelegate>
                                       forState:UIControlStateNormal];
         [login.logInView.passwordForgottenButton setTitle:@"忘记密码"
                                                  forState:UIControlStateNormal];
-        
+        _loginController = login;
         [self presentModalViewController:login
                                 animated:YES];
         [login release];
@@ -196,7 +198,7 @@ PFSignUpViewControllerDelegate>
         [self.phoneField becomeFirstResponder];
         return NO;
     }
-
+    
     
     return YES;
 }
@@ -322,51 +324,71 @@ PFSignUpViewControllerDelegate>
 
 - (void)saveProduct
 {
-    PFObject *product = [PFObject objectWithClassName:@"Product"];
-    
-    [product setObject:self.productNameField.text
-                forKey:@"name"];
-    [product setObject:[NSNumber numberWithFloat:self.priceField.text.floatValue]
-                forKey:@"price"];
-    [product setObject:self.contactField.text
-                forKey:@"contact"];
-    [product setObject:self.phoneField.text
-                forKey:@"phone"];
-    [product setObject:[NSNumber numberWithBool:NO]
-                forKey:@"sold"];
-    PFGeoPoint *location = [PFGeoPoint geoPointWithLocation:self.location];
-    [product setObject:location
-                forKey:@"location"];
-
-    PFRelation *relation = [product relationforKey:@"user"];
-    [relation addObject:[PFUser currentUser]];
-    
-    [SVProgressHUD showWithStatus:@"正在保存..."
-                         maskType:SVProgressHUDMaskTypeClear];    
-    
-    [product saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            self.descriptionField.text = nil;
-            self.productNameField.text = nil;
-            self.priceField.text = nil;
-            [self.productImageButton setBackgroundImage:[UIImage imageNamed:@"placeholder.png"]
-                                               forState:UIControlStateNormal];
-            
-            if (self.imagePath) {
-                PFFile *imageFile = [PFFile fileWithName:@"product_image"
-                                          contentsAtPath:self.imagePath.absoluteString];
-                [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                    self.imagePath = nil;
-                    [SVProgressHUD showSuccessWithStatus:@"保存成功！"];
-                }];
-            }
-            else
+    void (^block)(NSString *imageURL) = ^(NSString *imageURL) {
+        PFObject *product = [PFObject objectWithClassName:@"Product"];
+        
+        if (_descriptionEdited)
+            [product setObject:self.descriptionField.text
+                        forKey:@"desc"];
+        else
+            [product setObject:@""
+                        forKey:@"desc"];
+        [product setObject:self.productNameField.text
+                    forKey:@"name"];
+        [product setObject:[NSNumber numberWithFloat:self.priceField.text.floatValue]
+                    forKey:@"price"];
+        [product setObject:self.contactField.text
+                    forKey:@"contact"];
+        [product setObject:self.phoneField.text
+                    forKey:@"phone"];
+        if (imageURL)
+            [product setObject:imageURL
+                        forKey:@"image"];
+        else
+            [product setObject:@""
+                        forKey:@"image"];
+        [product setObject:[NSNumber numberWithBool:NO]
+                    forKey:@"sold"];
+        PFGeoPoint *location = [PFGeoPoint geoPointWithLocation:self.location];
+        [product setObject:location
+                    forKey:@"location"];
+        
+        PFRelation *relation = [product relationforKey:@"user"];
+        [relation addObject:[PFUser currentUser]];
+        
+        
+        [product saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                self.descriptionField.text = nil;
+                self.productNameField.text = nil;
+                self.priceField.text = nil;
+                [self.productImageButton setBackgroundImage:[UIImage imageNamed:@"placeholder.png"]
+                                                   forState:UIControlStateNormal];
                 [SVProgressHUD showSuccessWithStatus:@"保存成功！"];
-        }
-        else {
-            [SVProgressHUD showErrorWithStatus:@"保存失败！"];
-        }
-    }];
+            }
+            else {
+                [SVProgressHUD showErrorWithStatus:@"保存失败！"];
+            }
+        }];
+    };
+    
+    if (self.imagePath) {
+        [SVProgressHUD showWithStatus:@"正在保存..."
+                             maskType:SVProgressHUDMaskTypeClear];
+        
+        NSData *data = [NSData dataWithContentsOfURL:self.imagePath];
+        PFFile *imageFile = [PFFile fileWithData:data];
+        [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            self.imagePath = nil;
+            block(imageFile.url);
+        }];
+    }
+    else {
+        [SVProgressHUD showWithStatus:@"正在保存..."
+                             maskType:SVProgressHUDMaskTypeClear];
+        block(nil);
+    }
+    
 }
 
 #pragma mark - UITextView Delegate
@@ -497,7 +519,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     CGFloat h = 44.0;
     switch (indexPath.section) {
         case 0:
-            h = 100.0;
+            h = 120.0;
             break;
         case 1:
             
@@ -527,6 +549,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
             switch (indexPath.row) {
                 case 0:
                     [cell.contentView addSubview:self.descriptionField];
+                    self.descriptionField.frame = cell.contentView.bounds;
                     cell.clipsToBounds = YES;
                     cell.contentView.clipsToBounds = YES;
                     break;
@@ -647,10 +670,8 @@ didDismissWithButtonIndex:(NSInteger)buttonIndex
 - (void)signUpViewController:(PFSignUpViewController *)signUpController
                didSignUpUser:(PFUser *)user
 {
-    [signUpController dismissViewControllerAnimated:YES
-                                         completion:^{
-                                             [signUpController.presentingViewController dismissModalViewControllerAnimated:YES];
-                                         }];
+    [signUpController.presentedViewController dismissModalViewControllerAnimated:YES];
+    //[signUpController dismissModalViewControllerAnimated:YES];
 }
 
 @end

@@ -7,7 +7,25 @@
 //
 
 #import "SHProduct.h"
+#import <Parse/Parse.h>
 
 @implementation SHProduct
 
++ (id)productWithObject:(PFObject *)object
+{
+    SHProduct *p = [[SHProduct alloc] init];
+    p.phoneNumber = [object valueForKey:@"phone"];
+    p.productDescription = [object valueForKey:@"desc"];
+    p.productImageURL = [object valueForKey:@"image"];
+    p.productName = [object valueForKey:@"name"];
+    p.contactName = [object valueForKey:@"contact"];
+    p.price = [[object objectForKey:@"price"] floatValue];
+
+    CLLocationCoordinate2D loc;
+    loc.latitude = ((PFGeoPoint*)[object objectForKey:@"location"]).latitude;
+    loc.longitude = ((PFGeoPoint*)[object objectForKey:@"location"]).longitude;
+    p.location = loc;
+    
+    return [p autorelease];
+}
 @end

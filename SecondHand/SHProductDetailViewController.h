@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+@class SHProduct;
 
 @interface SHProductDetailViewController : UITableViewController
-
+@property (nonatomic, strong) SHProduct *product;
 @end

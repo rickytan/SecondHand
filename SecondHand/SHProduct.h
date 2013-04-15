@@ -9,11 +9,17 @@
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
 
+@class PFObject;
+
 @interface SHProduct : NSObject
 @property (nonatomic, strong) NSString *productName;
 @property (nonatomic, strong) NSString *phoneNumber;
+@property (nonatomic, strong) NSString *productDescription;
 @property (nonatomic, assign) CLLocationCoordinate2D location;
-@property (nonatomic, strong) NSString *userName;
+@property (nonatomic, strong) NSString *contactName;
 @property (nonatomic, assign) CGFloat price;
-@property (nonatomic, strong) NSString *productImageURL;
+@property (nonatomic, strong) NSURL *productImageURL;
+
++ (id)productWithObject:(PFObject*)object;
+
 @end

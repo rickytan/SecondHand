@@ -10,6 +10,23 @@
 #import "SHProductAnnotation.h"
 #import "SHProduct.h"
 #import <Parse/Parse.h>
+#import "UIImageView+WebCache.h"
+#import "SHProductDetailViewController.h"
+
+@interface SHAnnatationView : MKAnnotationView
+
+@end
+
+@implementation SHAnnatationView
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
+    if (selected)
+        [super setSelected:selected
+                  animated:animated];
+}
+
+@end
 
 @interface SHNearViewController () <UISearchDisplayDelegate, MKMapViewDelegate>
 
@@ -17,13 +34,17 @@
 @property (nonatomic, strong) MKUserTrackingBarButtonItem *trackingItem;
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, strong) PFQuery *productQuery;
+@property (nonatomic, readonly) NSMutableArray *annotations;
 @property (nonatomic, strong) NSArray *productItems;
 
 - (void)loadProductsWithLocation:(MKCoordinateRegion)region;
+- (void)onProductButton:(id)sender;
+- (void)openCallOut:(id<MKAnnotation>)annotation;
 
 @end
 
 @implementation SHNearViewController
+@synthesize annotations = _annotations;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -70,7 +91,15 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
     
+    if (_located) {
+        [self loadProductsWithLocation:self.mapView.region];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -85,6 +114,14 @@
 }
 
 #pragma mark - Methods
+
+- (NSMutableArray*)annotations
+{
+    if (!_annotations) {
+        _annotations = [[NSMutableArray alloc] initWithCapacity:7];
+    }
+    return _annotations;
+}
 
 - (void)loadProductsWithLocation:(MKCoordinateRegion)region
 {
@@ -110,11 +147,27 @@
 
     [self.productQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (objects) {
+            [self.mapView removeAnnotations:self.annotations];
+            [self.annotations removeAllObjects];
             
-            self.productItems = objects;
-            
+            NSMutableArray *mutArr = [NSMutableArray arrayWithCapacity:objects.count];
+            for (PFObject *obj in objects) {
+                SHProduct *product = [SHProduct productWithObject:obj];
+                [mutArr addObject:product];
+                SHProductAnnotation *annotation = [[SHProductAnnotation alloc] initWithProduct:product];
+                [self.annotations addObject:annotation];
+                [annotation release];
+            }
+            self.productItems = [NSArray arrayWithArray:mutArr];
+            [self.mapView addAnnotations:self.annotations];
         }
     }];
+}
+
+- (void)openCallOut:(id<MKAnnotation>)annotation
+{
+    [self.mapView selectAnnotation:annotation
+                          animated:YES];
 }
 
 #pragma mark - UISearchDisplayController Delegate
@@ -138,16 +191,6 @@
 regionWillChangeAnimated:(BOOL)animated
 {
     [self.searchBar resignFirstResponder];
-}
-
-- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
-{
-    
-}
-
-- (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
-{
-    
 }
 
 - (void)mapViewWillStartLocatingUser:(MKMapView *)mapView
@@ -177,26 +220,64 @@ regionDidChangeAnimated:(BOOL)animated
     }
 }
 
+- (void)mapView:(MKMapView *)mapView
+didAddAnnotationViews:(NSArray *)views
+{
+    
+}
+
+- (void)mapView:(MKMapView *)mapView
+ annotationView:(MKAnnotationView *)view
+calloutAccessoryControlTapped:(UIControl *)control
+{
+    SHProductAnnotation *productAnno = (SHProductAnnotation*)view.annotation;
+    SHProduct *product = productAnno.product;
+    
+    SHProductDetailViewController *detail = [[SHProductDetailViewController alloc] init];
+    detail.product = product;
+    
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:detail];
+    [detail release];
+    
+    [self presentModalViewController:nav
+                            animated:YES];
+    [nav release];
+}
+
 
 - (MKAnnotationView*)mapView:(MKMapView *)mapView
            viewForAnnotation:(id<MKAnnotation>)annotation
 {
+    if (annotation == mapView.userLocation)
+        return nil;
+    
     static NSString *AnnotationIdentifier = @"SecondHandProduct";
     MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:AnnotationIdentifier];
     if (!annotationView) {
-        annotationView = [[[MKAnnotationView alloc] initWithAnnotation:annotation
+        annotationView = [[[SHAnnatationView alloc] initWithAnnotation:annotation
                                                        reuseIdentifier:AnnotationIdentifier] autorelease];
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 28, 24)];
+        imageView.image = [UIImage imageNamed:@"product-ph.png"];
+        annotationView.leftCalloutAccessoryView = imageView;
+        [imageView release];
+        
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+        annotationView.rightCalloutAccessoryView = button;
     }
-    else {
-        [annotationView prepareForReuse];
-    }
+
+    SHProductAnnotation *prod = (SHProductAnnotation*)annotation;
     
-    if (annotation == mapView.userLocation) {
-        annotationView.image = [UIImage imageNamed:@"pin_blue.png"];
-    }
-    else {
-        annotationView.image = [UIImage imageNamed:@"pin_red.png"];
-    }
+    annotationView.image = [UIImage imageNamed:@"pin_red.png"];
+
+    [((UIImageView*)annotationView.leftCalloutAccessoryView) setImageWithURL:prod.product.productImageURL
+                                                            placeholderImage:[UIImage imageNamed:@"product-ph.png"]];
+    annotationView.canShowCallout = YES;
+    
+    /*
+    [self performSelector:@selector(openCallOut:)
+               withObject:annotation
+               afterDelay:0.35];
+     */
     
     return annotationView;
 }
