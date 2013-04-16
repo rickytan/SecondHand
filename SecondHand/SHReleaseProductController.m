@@ -65,6 +65,11 @@ PFSignUpViewControllerDelegate>
     return [self initWithStyle:UITableViewStyleGrouped];
 }
 
+- (void)loadView
+{
+    [super loadView];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

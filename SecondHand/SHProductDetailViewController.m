@@ -64,13 +64,14 @@ MFMessageComposeViewControllerDelegate>
                                                                     style:UIBarButtonItemStyleBordered
                                                                    target:self
                                                                    action:@selector(onDismiss:)];
-    UIBarButtonItem *buyItem = [[UIBarButtonItem alloc] initWithTitle:@"收藏"
+    UIBarButtonItem *favItem = [[UIBarButtonItem alloc] initWithTitle:@"收藏"
                                                                 style:UIBarButtonItemStyleBordered
                                                                target:self
                                                                action:@selector(onFav:)];
     self.navigationItem.leftBarButtonItem = dismissItem;
-    self.navigationItem.rightBarButtonItem = buyItem;
-    [dismissItem release], [buyItem release];
+    if (!self.hideFavoriteButton)
+        self.navigationItem.rightBarButtonItem = favItem;
+    [dismissItem release], [favItem release];
     
 }
 

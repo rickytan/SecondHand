@@ -10,6 +10,22 @@
 #import <Parse/Parse.h>
 #import "SHLoginViewController.h"
 
+@interface UIViewController (SHExtension)
+
+@end
+
+@implementation UIViewController (SHExtension)
+
+- (void)didReceiveMemoryWarning
+{
+    if (self.isViewLoaded && self.view.window == nil) {
+        self.view = nil;
+        [self viewDidUnload];
+    }
+}
+
+@end
+
 @implementation SHAppDelegate
 
 - (void)dealloc

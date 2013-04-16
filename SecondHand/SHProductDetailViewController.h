@@ -11,4 +11,5 @@
 
 @interface SHProductDetailViewController : UITableViewController
 @property (nonatomic, strong) SHProduct *product;
+@property (nonatomic, assign) BOOL hideFavoriteButton;
 @end

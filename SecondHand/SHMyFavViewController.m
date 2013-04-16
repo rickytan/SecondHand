@@ -42,11 +42,13 @@
     
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
+    [super viewWillAppear:animated];
     
-    [self loadData];
+    if (!self.presentedViewController)
+        [self loadData];
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -123,6 +125,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleGray;
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
         UILabel *sold = [[UILabel alloc] init];
+        sold.backgroundColor = [UIColor clearColor];
         cell.accessoryView = sold;
         [sold release];
     }
@@ -167,16 +170,14 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         PFRelation *relation = [[PFUser currentUser] relationforKey:@"fav"];
         [relation removeObject:[PFObject objectWithoutDataWithClassName:@"Product"
                                                                objectId:item.productID]];
-        //__block NSIndexPath *tmpIndex = indexPath;
+
         [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
                 [self.favoriteItems removeObjectAtIndex:indexPath.row];
                 [tableView deleteRowsAtIndexPaths:@[indexPath]
                                  withRowAnimation:UITableViewRowAnimationFade];
             }
-            else {
-                
-            }
+
         }];
         
     }
@@ -196,9 +197,12 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     
     SHProductDetailViewController *detail = [[SHProductDetailViewController alloc] init];
     detail.product = item;
-    [self presentModalViewController:detail
+    detail.hideFavoriteButton = YES;
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:detail];
+    [self presentModalViewController:nav
                             animated:YES];
     [detail release];
+    [nav release];
 }
 
 @end

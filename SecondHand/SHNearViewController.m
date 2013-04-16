@@ -72,6 +72,19 @@
     return self;
 }
 
+- (void)loadView
+{
+    [super loadView];
+    MKMapView *map = [[MKMapView alloc] initWithFrame:self.view.bounds];
+    map.delegate = self;
+    map.mapType = MKMapTypeStandard;
+    map.showsUserLocation = YES;
+    [self.view addSubview:map];
+    
+    self.mapView = map;
+    [map release];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
