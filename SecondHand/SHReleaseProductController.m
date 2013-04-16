@@ -124,6 +124,7 @@ PFSignUpViewControllerDelegate>
         signup.delegate = self;
         signup.fields = PFSignUpFieldsDefault & (~PFSignUpFieldsEmail);
         signup.signUpView.logo = logoLabel;
+        [logoLabel release];
         signup.signUpView.usernameField.placeholder = @"用户名";
         signup.signUpView.passwordField.placeholder = @"密码";
         signup.signUpView.emailField.placeholder = @"邮箱";
@@ -250,7 +251,7 @@ PFSignUpViewControllerDelegate>
 
 - (UIToolbar*)toolBar
 {
-    UIToolbar *tool = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 36)];
+    UIToolbar *tool = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 40)];
     tool.barStyle = UIBarStyleBlackTranslucent;
     UIBarButtonItem *done = [[UIBarButtonItem alloc] initWithTitle:@"完成"
                                                              style:UIBarButtonItemStyleDone
@@ -400,6 +401,8 @@ PFSignUpViewControllerDelegate>
 
 - (void)saveProduct
 {
+    static PFFile *imageFile = nil;
+    
     void (^block)(PFFile *file) = ^(PFFile *file) {
         PFObject *product = nil;
         if (self.product)
@@ -439,6 +442,8 @@ PFSignUpViewControllerDelegate>
                 self.descriptionField.text = nil;
                 self.productNameField.text = nil;
                 self.priceField.text = nil;
+                [imageFile release];
+                imageFile = nil;
                 [self.productImageButton setBackgroundImage:[UIImage imageNamed:@"placeholder.png"]
                                                    forState:UIControlStateNormal];
                 [SVProgressHUD showSuccessWithStatus:@"保存成功！"];
@@ -448,12 +453,12 @@ PFSignUpViewControllerDelegate>
             }
         }];
     };
-    
+
     if (self.imageData) {
         [SVProgressHUD showWithStatus:@"正在保存..."
                              maskType:SVProgressHUDMaskTypeClear];
         
-        PFFile *imageFile = [PFFile fileWithData:self.imageData];
+        imageFile = [[PFFile fileWithData:self.imageData] retain];
         [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
                 self.imageData = nil;
@@ -467,7 +472,7 @@ PFSignUpViewControllerDelegate>
     else {
         [SVProgressHUD showWithStatus:@"正在保存..."
                              maskType:SVProgressHUDMaskTypeClear];
-        block(nil);
+        block(imageFile);
     }
     
 }

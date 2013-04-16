@@ -137,12 +137,14 @@ MFMessageComposeViewControllerDelegate>
     [actions release];
 }
 
-- (void)onFav:(id)sender
+- (void)onFav:(UIBarButtonItem*)favItem
 {
     if (![PFUser currentUser].isAuthenticated) {
         
         return;
     }
+    favItem.enabled = NO;
+    
     PFObject *obj = [PFObject objectWithClassName:@"Favorite"];
     PFRelation *rela = [obj relationforKey:@"user"];
     [rela addObject:[PFUser currentUser]];
@@ -159,6 +161,7 @@ MFMessageComposeViewControllerDelegate>
         else {
             [SVProgressHUD showErrorWithStatus:@"收藏失败！"];
         }
+        favItem.enabled = YES;
     }];
 }
 

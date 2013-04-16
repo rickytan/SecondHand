@@ -34,8 +34,7 @@
 @property (nonatomic, strong) MKUserTrackingBarButtonItem *trackingItem;
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, strong) PFQuery *productQuery;
-@property (nonatomic, readonly) NSMutableArray *annotations;
-@property (nonatomic, strong) NSArray *productItems;
+@property (nonatomic, readonly) NSMutableDictionary *annotations;
 
 - (void)loadProductsWithLocation:(MKCoordinateRegion)region;
 - (void)openCallOut:(id<MKAnnotation>)annotation;
@@ -115,10 +114,10 @@
 
 #pragma mark - Methods
 
-- (NSMutableArray*)annotations
+- (NSMutableDictionary*)annotations
 {
     if (!_annotations) {
-        _annotations = [[NSMutableArray alloc] initWithCapacity:7];
+        _annotations = [[NSMutableDictionary alloc] initWithCapacity:7];
     }
     return _annotations;
 }
@@ -155,28 +154,33 @@
                     toNortheast:[PFGeoPoint geoPointWithLatitude:top
                                                        longitude:right]];
     
-//    [self.productQuery whereKey:@"user"
-//                     notEqualTo:[PFUser currentUser]];
+    [self.productQuery whereKey:@"user"
+                     notEqualTo:[PFUser currentUser]];
     [self.productQuery orderByDescending:@"createAt"];
 
+    __block NSMutableDictionary * tmpDict = self.annotations;
     [self.productQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (objects) {
+            NSMutableArray *keysToRemove = [NSMutableArray arrayWithArray:tmpDict.allKeys];
+            NSMutableDictionary *objectsToAdd = [NSMutableDictionary dictionaryWithCapacity:objects.count];
             
-            [self.mapView removeAnnotations:self.annotations];
-            [self.annotations removeAllObjects];
-            
-            NSMutableArray *mutArr = [NSMutableArray arrayWithCapacity:objects.count];
-            for (PFObject *obj in objects) {
-                SHProduct *product = [SHProduct productWithObject:obj];
-                [mutArr addObject:product];
-                SHProductAnnotation *annotation = [[SHProductAnnotation alloc] initWithProduct:product];
-                [self.annotations addObject:annotation];
-                [annotation release];
+            for (PFObject *o in objects) {
+                if ([keysToRemove containsObject:o.objectId])
+                    [keysToRemove removeObject:o.objectId];
+                else {
+                    SHProduct *product = [SHProduct productWithObject:o];
+                    SHProductAnnotation *annotation = [[SHProductAnnotation alloc] initWithProduct:product];
+                    [objectsToAdd setObject:annotation
+                                     forKey:o.objectId];
+                    [annotation release];
+                }
             }
-            self.productItems = [NSArray arrayWithArray:mutArr];
-            [self.mapView addAnnotations:self.annotations];
-            
-            
+            NSArray *annotationsToRemove = [[tmpDict dictionaryWithValuesForKeys:keysToRemove] allValues];
+            [self.mapView removeAnnotations:annotationsToRemove];
+            [tmpDict removeObjectsForKeys:keysToRemove];
+            [tmpDict addEntriesFromDictionary:objectsToAdd];
+            [self.mapView addAnnotations:objectsToAdd.allValues];
+
         }
     }];
 }
@@ -223,9 +227,12 @@ regionWillChangeAnimated:(BOOL)animated
 - (void)mapView:(MKMapView *)mapView
 didUpdateUserLocation:(MKUserLocation *)userLocation
 {
+    if (!_located)
+        [self loadProductsWithLocation:self.mapView.region];
+    
     _located = YES;
     userLocation.title = @"我在这儿！";
-
+    
     //[mapView setRegion:MKCoordinateRegionMakeWithDistance(userLocation.location.coordinate, self.radius, self.radius)
     //          animated:YES];
 }
