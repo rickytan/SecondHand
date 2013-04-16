@@ -12,9 +12,10 @@
 #import "SVProgressHUD.h"
 #import "SHProduct.h"
 #import "UIImageView+WebCache.h"
+#import "SHProductDetailViewController.h"
 
 @interface SHMyFavViewController ()
-@property (nonatomic, strong) NSArray *favoriteItems;
+@property (nonatomic, strong) NSMutableArray *favoriteItems;
 @end
 
 @implementation SHMyFavViewController
@@ -32,13 +33,13 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
- 
+    
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -54,6 +55,14 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (NSMutableArray*)favoriteItems
+{
+    if (!_favoriteItems) {
+        _favoriteItems = [[NSMutableArray alloc] initWithCapacity:7];
+    }
+    return _favoriteItems;
+}
+
 #pragma mark - Table view data source
 
 
@@ -66,18 +75,17 @@
     [SVProgressHUD showWithStatus:@"加载中..."
                          maskType:SVProgressHUDMaskTypeClear];
     
-    query = [PFQuery queryWithClassName:@"Favorite"];
-    [query whereKey:@"user"
-            equalTo:[PFUser currentUser]];
+    PFRelation *relation = [[PFUser currentUser] relationforKey:@"fav"];
+    query = [relation query];
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (objects) {
-            NSMutableArray *mutArr = [NSMutableArray arrayWithCapacity:objects.count];
+            [self.favoriteItems removeAllObjects];
+            
             for (PFObject *obj in objects) {
                 SHProduct *product = [SHProduct productWithObject:obj];
-                [mutArr addObject:product];
+                [self.favoriteItems addObject:product];
             }
-            self.favoriteItems = [NSArray arrayWithArray:mutArr];
             [self.tableView reloadData];
             query = nil;
             
@@ -114,10 +122,7 @@
                                        reuseIdentifier:CellIdentifier] autorelease];
         cell.selectionStyle = UITableViewCellSelectionStyleGray;
         cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        UISwitch *sold = [[UISwitch alloc] init];
-        [sold addTarget:self
-                 action:@selector(onSold:)
-       forControlEvents:UIControlEventValueChanged];
+        UILabel *sold = [[UILabel alloc] init];
         cell.accessoryView = sold;
         [sold release];
     }
@@ -134,57 +139,66 @@
     
     cell.textLabel.text = item.productName;
     cell.detailTextLabel.text = [NSString stringWithFormat:@"¥%.2f",item.price];
-    ((UISwitch*)cell.accessoryView).on = item.isSold;
-    cell.accessoryView.tag = indexPath.row;
+    UILabel *label = (UILabel*)cell.accessoryView;
+    label.text = item.isSold ? @"已出售":@"待出售";
+    label.textColor = item.isSold ? [UIColor redColor]:[UIColor greenColor];
+    [label sizeToFit];
+    [cell setNeedsLayout];
     
     return cell;
 }
 
-/*
- // Override to support conditional editing of the table view.
- - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
- {
- // Return NO if you do not want the specified item to be editable.
- return YES;
- }
- */
 
-/*
- // Override to support editing the table view.
- - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
- {
- if (editingStyle == UITableViewCellEditingStyleDelete) {
- // Delete the row from the data source
- [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
- }
- else if (editingStyle == UITableViewCellEditingStyleInsert) {
- // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
- }
- }
- */
+// Override to support conditional editing of the table view.
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Return NO if you do not want the specified item to be editable.
+    return YES;
+}
 
-/*
- // Override to support rearranging the table view.
- - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
- {
- }
- */
+// Override to support editing the table view.
+- (void)tableView:(UITableView *)tableView
+commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
+forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // Delete the row from the data source
+        SHProduct *item = [self.favoriteItems objectAtIndex:indexPath.row];
+        PFRelation *relation = [[PFUser currentUser] relationforKey:@"fav"];
+        [relation removeObject:[PFObject objectWithoutDataWithClassName:@"Product"
+                                                               objectId:item.productID]];
+        //__block NSIndexPath *tmpIndex = indexPath;
+        [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                [self.favoriteItems removeObjectAtIndex:indexPath.row];
+                [tableView deleteRowsAtIndexPaths:@[indexPath]
+                                 withRowAnimation:UITableViewRowAnimationFade];
+            }
+            else {
+                
+            }
+        }];
+        
+    }
+    else if (editingStyle == UITableViewCellEditingStyleInsert) {
+        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+    }
+}
 
-/*
- // Override to support conditional rearranging of the table view.
- - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
- {
- // Return NO if you do not want the item to be re-orderable.
- return YES;
- }
- */
+
 
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Navigation logic may go here. Create and push another view controller.
-
+    SHProduct *item = [self.favoriteItems objectAtIndex:indexPath.row];
+    
+    SHProductDetailViewController *detail = [[SHProductDetailViewController alloc] init];
+    detail.product = item;
+    [self presentModalViewController:detail
+                            animated:YES];
+    [detail release];
 }
 
 @end

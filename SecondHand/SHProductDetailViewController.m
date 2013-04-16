@@ -145,15 +145,11 @@ MFMessageComposeViewControllerDelegate>
     }
     favItem.enabled = NO;
     
-    PFObject *obj = [PFObject objectWithClassName:@"Favorite"];
-    PFRelation *rela = [obj relationforKey:@"user"];
-    [rela addObject:[PFUser currentUser]];
-    rela = [obj relationforKey:@"product"];
-    PFObject *prod = [PFObject objectWithoutDataWithClassName:@"Product"
-                                                     objectId:self.product.productID];
-    [rela addObject:prod];
+    PFRelation *rela = [[PFUser currentUser] relationforKey:@"fav"];
+    [rela addObject:[PFObject objectWithoutDataWithClassName:@"Product"
+                                                    objectId:self.product.productID]];
     
-    [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+    [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             self.navigationItem.rightBarButtonItem.title = @"已收藏";
             [SVProgressHUD showSuccessWithStatus:@"收藏成功！"];

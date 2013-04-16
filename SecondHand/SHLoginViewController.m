@@ -90,7 +90,7 @@
 - (void)logInViewController:(PFLogInViewController *)logInController
                didLogInUser:(PFUser *)user
 {
-    
+    [self dismissModalViewControllerAnimated:YES];
 }
 
 /// Sent to the delegate when the log in attempt fails.
@@ -98,11 +98,6 @@
     didFailToLogInWithError:(NSError *)error
 {
     
-}
-
-- (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController
-{
-    [self.tabBarController setSelectedIndex:0];
 }
 
 #pragma mark - PFSingup Delegate
