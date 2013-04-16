@@ -8,8 +8,7 @@
 
 #import "SHAppDelegate.h"
 #import <Parse/Parse.h>
-
-
+#import "SHLoginViewController.h"
 
 @implementation SHAppDelegate
 
@@ -158,6 +157,22 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     didFailToLogInWithError:(NSError *)error
 {
     
+}
+
+#pragma mark - UITabView Delegate
+
+- (BOOL)tabBarController:(UITabBarController *)tabBarController
+shouldSelectViewController:(UIViewController *)viewController
+{
+    NSUInteger idx = [[tabBarController viewControllers] indexOfObject:viewController];
+    if ((idx == 1 || idx == 2) && ![PFUser currentUser].isAuthenticated) {
+        SHLoginViewController *loginController = [[SHLoginViewController alloc] init];
+        [self.tabBarController presentModalViewController:loginController
+                                                 animated:YES];
+        [loginController release];
+        return NO;
+    }
+    return YES;
 }
 
 @end

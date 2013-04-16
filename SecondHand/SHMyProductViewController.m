@@ -22,7 +22,7 @@
     
     CGFloat h = CGRectGetHeight(self.bounds) - 12 * 2;
     CGFloat w = h;
-    if (self.imageView.image)
+    if (self.imageView.image.size.height > 0)
         w = h * self.imageView.image.size.width / self.imageView.image.size.height;
     self.imageView.frame = CGRectMake(12, 12, w, h);
     CGRect r = self.textLabel.frame;
@@ -67,6 +67,12 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
     
     [self loadData];
 }

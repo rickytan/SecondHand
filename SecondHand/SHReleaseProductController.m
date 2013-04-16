@@ -108,56 +108,6 @@ PFSignUpViewControllerDelegate>
 {
     [super viewDidAppear:animated];
     
-    if (![PFUser currentUser].isAuthenticated) {
-        
-        PFLogInViewController *login = [[PFLogInViewController alloc] init];
-        login.fields = PFLogInFieldsDefault & (~PFLogInFieldsPasswordForgotten);
-        login.delegate = self;
-        
-        UILabel *logoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 48)];
-        logoLabel.textColor = [UIColor whiteColor];
-        logoLabel.textAlignment = UITextAlignmentCenter;
-        logoLabel.backgroundColor = [UIColor clearColor];
-        logoLabel.font = [UIFont boldSystemFontOfSize:24];
-        
-        PFSignUpViewController *signup = [[PFSignUpViewController alloc] init];
-        signup.delegate = self;
-        signup.fields = PFSignUpFieldsDefault & (~PFSignUpFieldsEmail);
-        signup.signUpView.logo = logoLabel;
-        [logoLabel release];
-        signup.signUpView.usernameField.placeholder = @"用户名";
-        signup.signUpView.passwordField.placeholder = @"密码";
-        signup.signUpView.emailField.placeholder = @"邮箱";
-        [signup.signUpView.signUpButton setTitle:@"注册"
-                                        forState:UIControlStateNormal];
-        login.signUpController = signup;
-        [signup release];
-        
-        logoLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 48)];
-        logoLabel.textColor = [UIColor whiteColor];
-        logoLabel.textAlignment = UITextAlignmentCenter;
-        logoLabel.backgroundColor = [UIColor clearColor];
-        logoLabel.font = [UIFont boldSystemFontOfSize:24];
-        login.logInView.logo = logoLabel;
-        [logoLabel release];
-        
-        //login.logInView.backgroundColor = [UIColor scrollViewTexturedBackgroundColor];
-        login.logInView.usernameField.placeholder = @"用户名";
-        login.logInView.passwordField.placeholder = @"密码";
-        login.logInView.signUpLabel.text = @"没有帐号？";
-        [login.logInView.logInButton setTitle:@"登录"
-                                     forState:UIControlStateNormal];
-        [login.logInView.signUpButton setTitle:@"注册"
-                                      forState:UIControlStateNormal];
-        [login.logInView.passwordForgottenButton setTitle:@"忘记密码"
-                                                 forState:UIControlStateNormal];
-        _loginController = login;
-        [self presentModalViewController:login
-                                animated:YES];
-        [login release];
-        return;
-    }
-    
     if (![CLLocationManager locationServicesEnabled] ||
         [CLLocationManager authorizationStatus] != kCLAuthorizationStatusAuthorized) {
         [[[[UIAlertView alloc] initWithTitle:@"请开启定位服务"
@@ -781,42 +731,5 @@ didDismissWithButtonIndex:(NSInteger)buttonIndex
     [self.tabBarController setSelectedIndex:0];
 }
 
-#pragma mark - PFLogin Delegate
-
-- (void)logInViewController:(PFLogInViewController *)logInController
-               didLogInUser:(PFUser *)user
-{
-    self.contactField.text = user.username;
-}
-
-/// Sent to the delegate when the log in attempt fails.
-- (void)logInViewController:(PFLogInViewController *)logInController
-    didFailToLogInWithError:(NSError *)error
-{
-    
-}
-
-- (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController
-{
-    [self.tabBarController setSelectedIndex:0];
-}
-
-#pragma mark - PFSingup Delegate
-
-- (BOOL)signUpViewController:(PFSignUpViewController *)signUpController
-           shouldBeginSignUp:(NSDictionary *)info
-{
-    return YES;
-}
-
-- (void)signUpViewController:(PFSignUpViewController *)signUpController
-               didSignUpUser:(PFUser *)user
-{
-    [signUpController dismissViewControllerAnimated:YES
-                                         completion:^{
-                                             [_loginController dismissModalViewControllerAnimated:YES];
-                                             _loginController = nil;
-                                         }];
-}
 
 @end

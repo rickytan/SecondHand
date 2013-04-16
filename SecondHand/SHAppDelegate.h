@@ -9,7 +9,11 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 
-@interface SHAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate, PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate>
+@interface SHAppDelegate : UIResponder
+<UIApplicationDelegate,
+UITabBarControllerDelegate,
+PFLogInViewControllerDelegate,
+PFSignUpViewControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UIWindow *window;
 @property (strong, nonatomic) UINavigationController *navigationController;

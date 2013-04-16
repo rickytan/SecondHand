@@ -49,7 +49,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-
+        
     }
     return self;
 }
@@ -96,9 +96,9 @@
 {
     [super viewDidAppear:animated];
     
-    if (_located) {
-        [self loadProductsWithLocation:self.mapView.region];
-    }
+    //    if (_located) {
+    //        [self loadProductsWithLocation:self.mapView.region];
+    //    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -128,7 +128,7 @@
         return;
     
     [self.productQuery cancel];
-
+    
     CLLocationDegrees left = region.center.longitude - region.span.longitudeDelta;
     CLLocationDegrees right = region.center.longitude + region.span.longitudeDelta;
     CLLocationDegrees top = region.center.latitude + region.span.latitudeDelta;
@@ -153,11 +153,12 @@
                                                        longitude:left]
                     toNortheast:[PFGeoPoint geoPointWithLatitude:top
                                                        longitude:right]];
+    if ([PFUser currentUser].isAuthenticated)
+        [self.productQuery whereKey:@"user"
+                         notEqualTo:[PFUser currentUser]];
     
-    [self.productQuery whereKey:@"user"
-                     notEqualTo:[PFUser currentUser]];
     [self.productQuery orderByDescending:@"createAt"];
-
+    
     __block NSMutableDictionary * tmpDict = self.annotations;
     [self.productQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (objects) {
@@ -180,7 +181,7 @@
             [tmpDict removeObjectsForKeys:keysToRemove];
             [tmpDict addEntriesFromDictionary:objectsToAdd];
             [self.mapView addAnnotations:objectsToAdd.allValues];
-
+            
         }
     }];
 }
@@ -291,18 +292,18 @@ calloutAccessoryControlTapped:(UIControl *)control
         annotationView.image = [UIImage imageNamed:@"pin_red.png"];
         annotationView.centerOffset = CGPointMake(0, -annotationView.image.size.height / 2 + 3);
     }
-
+    
     SHProductAnnotation *prod = (SHProductAnnotation*)annotation;
     
-
+    
     [((UIImageView*)annotationView.leftCalloutAccessoryView) setImageWithURL:prod.product.productImageURL
                                                             placeholderImage:[UIImage imageNamed:@"product-ph.png"]];
     annotationView.canShowCallout = YES;
     
     /*
-    [self performSelector:@selector(openCallOut:)
-               withObject:annotation
-               afterDelay:0.35];
+     [self performSelector:@selector(openCallOut:)
+     withObject:annotation
+     afterDelay:0.35];
      */
     
     return annotationView;
