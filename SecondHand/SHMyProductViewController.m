@@ -126,10 +126,10 @@
             }
             self.productItems = [NSArray arrayWithArray:mutArr];
             [self.tableView reloadData];
-            query = nil;
             
             [SVProgressHUD dismiss];
         }
+        query = nil;
     }];
 }
 

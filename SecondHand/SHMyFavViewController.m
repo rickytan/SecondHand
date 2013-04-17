@@ -99,10 +99,10 @@
                 [self.favoriteItems addObject:product];
             }
             [self.tableView reloadData];
-            query = nil;
             
             [SVProgressHUD dismiss];
         }
+        query = nil;
     }];
 }
 

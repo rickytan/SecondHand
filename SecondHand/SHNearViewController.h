@@ -12,5 +12,6 @@
 @interface SHNearViewController : UIViewController
 {
     BOOL                     _located;
+    BOOL                     _needReload;
 }
 @end

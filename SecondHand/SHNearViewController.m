@@ -28,15 +28,24 @@
 
 @end
 
-@interface SHNearViewController () <UISearchDisplayDelegate, MKMapViewDelegate>
+@interface SHNearViewController ()
+<UISearchDisplayDelegate,
+UISearchBarDelegate,
+UITableViewDataSource,
+UITableViewDelegate,
+MKMapViewDelegate>
 
 @property (nonatomic, assign) IBOutlet MKMapView *mapView;
 @property (nonatomic, strong) MKUserTrackingBarButtonItem *trackingItem;
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, strong) PFQuery *productQuery;
 @property (nonatomic, readonly) NSMutableDictionary *annotations;
+@property (nonatomic, strong) NSArray *searchWords;
+@property (nonatomic, strong) NSString *keyWord;
 
 - (void)loadProductsWithLocation:(MKCoordinateRegion)region;
+- (void)loadProductsWithName:(NSString*)name;
+- (void)loadSearchWordsWithString:(NSString*)string;
 - (void)openCallOut:(id<MKAnnotation>)annotation;
 
 @end
@@ -97,6 +106,8 @@
     
     self.navigationItem.leftBarButtonItem = self.trackingItem;
     self.navigationItem.titleView = self.searchDisplayController.searchBar;
+    
+    self.searchDisplayController.searchResultsTitle = @"test";
     
     self.mapView.userTrackingMode = MKUserTrackingModeFollow;
 }
@@ -170,6 +181,9 @@
     if ([PFUser currentUser].isAuthenticated)
         [self.productQuery whereKey:@"user"
                          notEqualTo:[PFUser currentUser]];
+    if (self.keyWord)
+        [self.productQuery whereKey:@"name"
+                     containsString:self.keyWord];
     
     [self.productQuery orderByDescending:@"createAt"];
     
@@ -197,6 +211,55 @@
             [self.mapView addAnnotations:objectsToAdd.allValues];
             
         }
+        self.productQuery = nil;
+    }];
+}
+
+- (void)loadProductsWithName:(NSString *)name
+{
+    [self.productQuery cancel];
+    
+    self.productQuery = [PFQuery queryWithClassName:@"Product"];
+    [self.productQuery whereKey:@"sold"
+                     notEqualTo:[NSNumber numberWithBool:YES]];
+    if ([PFUser currentUser].isAuthenticated)
+        [self.productQuery whereKey:@"user"
+                         notEqualTo:[PFUser currentUser]];
+    
+    [self.productQuery orderByDescending:@"createAt"];
+    
+    [self.productQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (objects) {
+            
+        }
+        self.productQuery = nil;
+    }];
+}
+
+- (void)loadSearchWordsWithString:(NSString *)string
+{
+    static PFQuery *query = nil;
+    
+    [query cancel];
+    
+    query = [PFQuery queryWithClassName:@"Product"];
+    [query whereKey:@"name"
+     containsString:string];
+    [query whereKey:@"sold"
+            equalTo:[NSNumber numberWithBool:NO]];
+    if (![PFUser currentUser].isAuthenticated)
+        [query whereKey:@"user"
+             notEqualTo:[PFUser currentUser]];
+    
+    query.limit = 10;
+    query.cachePolicy = kPFCachePolicyCacheThenNetwork;
+
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (objects) {
+            self.searchWords = objects;
+            [self.searchDisplayController.searchResultsTableView reloadData];
+        }
+        query = nil;
     }];
 }
 
@@ -208,18 +271,83 @@
 
 #pragma mark - UISearchDisplayController Delegate
 
-- (void) searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
+- (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
 {
     [self.navigationItem setLeftBarButtonItem:nil
                                      animated:YES];
 }
 
-- (void) searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
+- (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
 {
     [self.navigationItem setLeftBarButtonItem:self.trackingItem
                                      animated:YES];
 }
 
+- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
+{
+    if (_needReload) {
+        [self loadProductsWithLocation:self.mapView.region];
+        _needReload = NO;
+    }
+}
+
+#pragma mark - UISearchBar Delegate
+
+- (void)searchBar:(UISearchBar *)searchBar
+    textDidChange:(NSString *)searchText
+{
+    if (searchText.length == 0) {
+        self.keyWord = nil;
+        _needReload = YES;
+    }
+    else {
+        _needReload = NO;
+        [self loadSearchWordsWithString:searchText];
+    }
+}
+
+#pragma mark - UITable Delegate & Datasource
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView
+ numberOfRowsInSection:(NSInteger)section
+{
+    return self.searchWords.count;
+}
+
+- (UITableViewCell*)tableView:(UITableView *)tableView
+        cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *CellIdentifier = @"Cell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (!cell) {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                       reuseIdentifier:CellIdentifier] autorelease];
+    }
+    
+    PFObject *item = [self.searchWords objectAtIndex:indexPath.row];
+    cell.textLabel.text = [item objectForKey:@"name"];
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self.searchDisplayController setActive:NO
+                                   animated:YES];
+    PFObject *item = [self.searchWords objectAtIndex:indexPath.row];
+    self.keyWord = [item objectForKey:@"name"];
+    _needReload = NO;
+    
+    self.searchDisplayController.searchBar.text = self.keyWord;
+    
+    [self loadProductsWithLocation:self.mapView.region];
+}
 
 #pragma mark - MKMapView Delegate
 
