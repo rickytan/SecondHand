@@ -67,7 +67,12 @@ PFSignUpViewControllerDelegate>
 
 - (void)loadView
 {
-    [super loadView];
+    UITableView *table = [[UITableView alloc] initWithFrame:[UIScreen mainScreen].bounds
+                                                      style:UITableViewStyleGrouped];
+    table.delegate = self;
+    table.dataSource = self;
+    self.view = table;
+    [table release];
 }
 
 - (void)viewDidLoad
@@ -139,6 +144,20 @@ PFSignUpViewControllerDelegate>
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+    [self.productImageButton release];
+    _productImageButton = nil;
+    [self.productNameField release];
+    _productNameField = nil;
+    [self.contactField release];
+    _contactField = nil;
+    [self.phoneField release];
+    _phoneField = nil;
+    [self.priceField release];
+    _priceField = nil;
+    [self.mapView release];
+    _mapView = nil;
+    [self.descriptionField release];
+    _descriptionField = nil;
 }
 
 #pragma mark - Methods
