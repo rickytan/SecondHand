@@ -87,7 +87,7 @@
 {
     NSUInteger index = onoff.tag;
     
-    SHProduct *item = [self.productItems objectAtIndex:index];
+    __block SHProduct *item = [self.productItems objectAtIndex:index];
     PFObject *obj = [PFObject objectWithoutDataWithClassName:@"Product"
                                                     objectId:item.productID];
     [obj setObject:[NSNumber numberWithBool:onoff.isOn]
@@ -95,11 +95,13 @@
     
     onoff.enabled = NO;
     __block UISwitch *block = onoff;
+    __block BOOL sold = block.isOn;
     
     [obj saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (!succeeded)
-            block.on = !block.isOn;
+            block.on = !sold;
         block.enabled = YES;
+        item.sold = sold;
     }];
     
 }

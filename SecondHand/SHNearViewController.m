@@ -84,6 +84,7 @@ MKMapViewDelegate>
 - (void)loadView
 {
     [super loadView];
+    
     MKMapView *map = [[MKMapView alloc] initWithFrame:self.view.bounds];
     map.delegate = self;
     map.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -297,8 +298,9 @@ MKMapViewDelegate>
     textDidChange:(NSString *)searchText
 {
     if (searchText.length == 0) {
+        if(self.keyWord)
+            _needReload = YES;
         self.keyWord = nil;
-        _needReload = YES;
     }
     else {
         _needReload = NO;

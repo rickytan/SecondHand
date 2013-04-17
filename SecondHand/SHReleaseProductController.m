@@ -155,6 +155,7 @@ PFSignUpViewControllerDelegate>
     [self.priceField release];
     _priceField = nil;
     [self.mapView release];
+    _mapView.delegate = nil;
     _mapView = nil;
     [self.descriptionField release];
     _descriptionField = nil;

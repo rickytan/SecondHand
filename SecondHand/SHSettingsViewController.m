@@ -23,6 +23,16 @@
     return self;
 }
 
+- (void)loadView
+{
+    UITableView *table = [[UITableView alloc] initWithFrame:[UIScreen mainScreen].bounds
+                                                      style:UITableViewStyleGrouped];
+    table.delegate = self;
+    table.dataSource = self;
+    self.view = table;
+    [table release];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
