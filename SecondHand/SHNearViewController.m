@@ -44,7 +44,6 @@ MKMapViewDelegate>
 @property (nonatomic, strong) NSString *keyWord;
 
 - (void)loadProductsWithLocation:(MKCoordinateRegion)region;
-- (void)loadProductsWithName:(NSString*)name;
 - (void)loadSearchWordsWithString:(NSString*)string;
 - (void)openCallOut:(id<MKAnnotation>)annotation;
 
@@ -216,26 +215,6 @@ MKMapViewDelegate>
     }];
 }
 
-- (void)loadProductsWithName:(NSString *)name
-{
-    [self.productQuery cancel];
-    
-    self.productQuery = [PFQuery queryWithClassName:@"Product"];
-    [self.productQuery whereKey:@"sold"
-                     notEqualTo:[NSNumber numberWithBool:YES]];
-    if ([PFUser currentUser].isAuthenticated)
-        [self.productQuery whereKey:@"user"
-                         notEqualTo:[PFUser currentUser]];
-    
-    [self.productQuery orderByDescending:@"createAt"];
-    
-    [self.productQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (objects) {
-            
-        }
-        self.productQuery = nil;
-    }];
-}
 
 - (void)loadSearchWordsWithString:(NSString *)string
 {
@@ -248,7 +227,7 @@ MKMapViewDelegate>
      containsString:string];
     [query whereKey:@"sold"
             equalTo:[NSNumber numberWithBool:NO]];
-    if (![PFUser currentUser].isAuthenticated)
+    if ([PFUser currentUser].isAuthenticated)
         [query whereKey:@"user"
              notEqualTo:[PFUser currentUser]];
     

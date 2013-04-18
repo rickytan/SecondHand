@@ -14,6 +14,7 @@
 #import "UIImageView+WebCache.h"
 #import <Parse/Parse.h>
 #import "SVProgressHUD.h"
+#import <ShareSDK/ShareSDK.h>
 
 @interface SHProductDetailViewController ()
 <UIActionSheetDelegate,
@@ -26,6 +27,7 @@ MFMessageComposeViewControllerDelegate>
 - (void)onDismiss:(id)sender;
 - (void)onBuy:(id)sender;
 - (void)onFav:(id)sender;
+- (void)onAction:(id)sender;
 - (void)onImage:(id)sender;
 - (void)onRestore:(id)sender;
 @end
@@ -64,13 +66,12 @@ MFMessageComposeViewControllerDelegate>
                                                                     style:UIBarButtonItemStyleBordered
                                                                    target:self
                                                                    action:@selector(onDismiss:)];
-    UIBarButtonItem *favItem = [[UIBarButtonItem alloc] initWithTitle:@"收藏"
-                                                                style:UIBarButtonItemStyleBordered
-                                                               target:self
-                                                               action:@selector(onFav:)];
+    UIBarButtonItem *favItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                             target:self
+                                                                             action:@selector(onAction:)];
     self.navigationItem.leftBarButtonItem = dismissItem;
-    if (!self.hideFavoriteButton)
-        self.navigationItem.rightBarButtonItem = favItem;
+    self.navigationItem.rightBarButtonItem = favItem;
+    
     [dismissItem release], [favItem release];
     
 }
@@ -138,10 +139,73 @@ MFMessageComposeViewControllerDelegate>
     [actions release];
 }
 
+- (void)onAction:(id)sender
+{
+    NSString *content = [NSString stringWithFormat:@"我在 @随易 发现好东东啦！商品：%@，价格：%.2f %@",self.product.productName, self.product.price, self.product.productDescription];
+    id<ISSPublishContent> publishContent = [ShareSDK publishContent:content
+                                                     defaultContent:nil
+                                                              image:[self.productImageButton backgroundImageForState:UIControlStateNormal]
+                                                       imageQuality:0.8
+                                                          mediaType:SSPublishContentMediaTypeNews];
+    
+    NSArray *shareList = nil;
+    if (!self.hideFavoriteButton)
+        shareList = [ShareSDK customShareListWithType:
+                     [ShareSDK shareActionSheetItemWithTitle:@"收藏"
+                                                        icon:[UIImage imageNamed:@"favorite-icon.png"]
+                                                clickHandler:^{
+                                                    [self onFav:nil];
+                                                }],
+                     [NSNumber numberWithInt:ShareTypeSinaWeibo],
+                     [NSNumber numberWithInt:ShareTypeTencentWeibo],
+                     [NSNumber numberWithInt:ShareTypeRenren],
+                     [NSNumber numberWithInt:ShareTypeWeixiTimeline],
+                     [NSNumber numberWithInt:ShareTypeQQ], nil];
+    else
+        shareList = [ShareSDK getShareListWithType:
+                     ShareTypeSinaWeibo,
+                     ShareTypeTencentWeibo,
+                     ShareTypeRenren,
+                     ShareTypeWeixiTimeline,
+                     ShareTypeQQ, nil];
+    
+    [ShareSDK showShareActionSheet:self
+                     iPadContainer:nil
+                         shareList:shareList
+                           content:publishContent
+                     statusBarTips:YES
+                        convertUrl:YES      //委托转换链接标识，YES：对分享链接进行转换，NO：对分享链接不进行转换，为此值时不进行回流统计。
+                       authOptions:nil
+                  shareViewOptions:[ShareSDK defaultShareViewOptionsWithTitle:@"商品分享"
+                                                              oneKeyShareList:[ShareSDK getShareListWithType:
+                                                                               ShareTypeSinaWeibo,
+                                                                               ShareTypeTencentWeibo,
+                                                                               ShareTypeRenren,
+                                                                               ShareTypeWeixiTimeline,
+                                                                               ShareTypeQQ, nil]
+                                                               qqButtonHidden:NO
+                                                        wxSessionButtonHidden:NO
+                                                       wxTimelineButtonHidden:NO]//[ShareSDK simpleShareViewOptionWithTitle:@"商品分享"]
+                            result:^(ShareType type, SSPublishContentState state, id<ISSStatusInfo> statusInfo, id<ICMErrorInfo> error, BOOL end) {
+                                if (state == SSPublishContentStateSuccess)
+                                {
+                                    NSLog(@"分享成功");
+                                }
+                                else if (state == SSPublishContentStateFail)
+                                {
+                                    NSLog(@"分享失败,错误码:%d,错误描述:%@", [error errorCode], [error errorDescription]);
+                                }
+                            }];
+}
+
 - (void)onFav:(UIBarButtonItem*)favItem
 {
     if (![PFUser currentUser].isAuthenticated) {
-        
+        [[[[UIAlertView alloc] initWithTitle:@"登录后才能进行收藏哦！"
+                                     message:nil
+                                    delegate:nil
+                           cancelButtonTitle:@"好"
+                           otherButtonTitles:nil] autorelease] show];
         return;
     }
     favItem.enabled = NO;
@@ -152,7 +216,7 @@ MFMessageComposeViewControllerDelegate>
     
     [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
-            self.navigationItem.rightBarButtonItem.title = @"已收藏";
+            //self.navigationItem.rightBarButtonItem.title = @"已收藏";
             [SVProgressHUD showSuccessWithStatus:@"收藏成功！"];
         }
         else {
@@ -196,7 +260,7 @@ MFMessageComposeViewControllerDelegate>
     
     CGRect r = self.productImageButton.bounds;
     r = [self.view.window convertRect:r fromView:self.productImageButton];
-
+    
     UIImageView *image = [[UIImageView alloc] initWithFrame:r];
     image.contentMode = UIViewContentModeScaleAspectFill;
     [image setImageWithURL:self.product.productImageURL

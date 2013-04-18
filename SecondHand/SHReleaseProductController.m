@@ -539,6 +539,11 @@ didUpdateUserLocation:(MKUserLocation *)userLocation
               animated:YES];
     [mapView selectAnnotation:userLocation
                      animated:YES];
+    
+    if (_pendingSaveProduct) {
+        [self saveProduct];
+        _pendingSaveProduct = NO;
+    }
 }
 
 #pragma mark - UIImagePicker Delegate
@@ -744,6 +749,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
     
     if (_pendingSaveProduct) {
         [self saveProduct];
+        _pendingSaveProduct = NO;
     }
     [self.locationManager stopUpdatingLocation];
 }

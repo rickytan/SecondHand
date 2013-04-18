@@ -26,6 +26,8 @@
 		9C889489171BF25800995B22 /* SHMyProductViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C889488171BF25700995B22 /* SHMyProductViewController.m */; };
 		9C88948D171C2DA600995B22 /* SHMyFavViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C88948C171C2DA600995B22 /* SHMyFavViewController.m */; };
 		9C889490171DAD6C00995B22 /* SHLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C88948F171DAD6C00995B22 /* SHLoginViewController.m */; };
+		9C889492171F2D5D00995B22 /* ShareSDKLocalizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9C889491171F2D5D00995B22 /* ShareSDKLocalizable.strings */; };
+		9C889494171F2F5F00995B22 /* favorite-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C889493171F2F5E00995B22 /* favorite-icon@2x.png */; };
 		9CB3A1321715B45400BA9AB5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB3A1311715B45400BA9AB5 /* UIKit.framework */; };
 		9CB3A1341715B45400BA9AB5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB3A1331715B45400BA9AB5 /* Foundation.framework */; };
 		9CB3A1361715B45400BA9AB5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB3A1351715B45400BA9AB5 /* CoreGraphics.framework */; };
@@ -106,6 +108,8 @@
 		9C88948C171C2DA600995B22 /* SHMyFavViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHMyFavViewController.m; sourceTree = "<group>"; };
 		9C88948E171DAD6C00995B22 /* SHLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHLoginViewController.h; sourceTree = "<group>"; };
 		9C88948F171DAD6C00995B22 /* SHLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHLoginViewController.m; sourceTree = "<group>"; };
+		9C889491171F2D5D00995B22 /* ShareSDKLocalizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = ShareSDKLocalizable.strings; sourceTree = "<group>"; };
+		9C889493171F2F5E00995B22 /* favorite-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "favorite-icon@2x.png"; sourceTree = "<group>"; };
 		9CB3A12E1715B45400BA9AB5 /* SecondHand.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SecondHand.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CB3A1311715B45400BA9AB5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		9CB3A1331715B45400BA9AB5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -306,6 +310,7 @@
 		9CB3A1661715B7BF00BA9AB5 /* ShareSDK_v1.2.5 */ = {
 			isa = PBXGroup;
 			children = (
+				9C889491171F2D5D00995B22 /* ShareSDKLocalizable.strings */,
 				9CB3A1671715B7BF00BA9AB5 /* AGCommon.framework */,
 				9CB3A16A1715B7BF00BA9AB5 /* QQApi.framework */,
 				9CB3A16B1715B7BF00BA9AB5 /* Resource.bundle */,
@@ -334,6 +339,7 @@
 				9C889457171AEE9B00995B22 /* icon.png */,
 				9C889458171AEE9B00995B22 /* icon@2x.png */,
 				9CB3A1B31717302200BA9AB5 /* navbg.png */,
+				9C889493171F2F5E00995B22 /* favorite-icon@2x.png */,
 				9CB3A1B41717302200BA9AB5 /* navbg@2x.png */,
 				9CB3A1C117193D5900BA9AB5 /* orangeButton.png */,
 				9CB3A1C217193D5900BA9AB5 /* orangeButton@2x.png */,
@@ -435,6 +441,8 @@
 				9C88947D171B8E5500995B22 /* product-ph@2x.png in Resources */,
 				9C889484171BC4A200995B22 /* publish@2x.png in Resources */,
 				9C889486171BC4CB00995B22 /* publish.png in Resources */,
+				9C889492171F2D5D00995B22 /* ShareSDKLocalizable.strings in Resources */,
+				9C889494171F2F5F00995B22 /* favorite-icon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

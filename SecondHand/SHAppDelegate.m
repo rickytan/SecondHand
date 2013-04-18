@@ -8,6 +8,7 @@
 
 #import "SHAppDelegate.h"
 #import <Parse/Parse.h>
+#import <ShareSDK/ShareSDK.h>
 #import "SHLoginViewController.h"
 
 @interface UIViewController (SHExtension)
@@ -39,7 +40,7 @@
 {
     [self initParse];
     [self initUI];
-
+    [ShareSDK registerApp:@"2654b9e0970"];
 }
 
 - (void)initParse

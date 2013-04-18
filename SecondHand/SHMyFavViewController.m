@@ -61,6 +61,13 @@
     
 }
 
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    [SVProgressHUD dismiss];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -85,7 +92,7 @@
     [query cancel];
     
     [SVProgressHUD showWithStatus:@"加载中..."
-                         maskType:SVProgressHUDMaskTypeClear];
+                         maskType:SVProgressHUDMaskTypeNone];
     
     PFRelation *relation = [[PFUser currentUser] relationforKey:@"fav"];
     query = [relation query];

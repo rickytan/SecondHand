@@ -77,6 +77,13 @@
     [self loadData];
 }
 
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    [SVProgressHUD dismiss];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -113,7 +120,7 @@
     [query cancel];
     
     [SVProgressHUD showWithStatus:@"加载中..."
-                         maskType:SVProgressHUDMaskTypeClear];
+                         maskType:SVProgressHUDMaskTypeNone];
     
     query = [PFQuery queryWithClassName:@"Product"];
     [query whereKey:@"user"

@@ -7,6 +7,7 @@
 //
 
 #import "SHSettingsViewController.h"
+#import <Parse/Parse.h>
 
 @interface SHSettingsViewController ()
 
@@ -44,6 +45,13 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self.tableView reloadData];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -54,7 +62,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 3;
+    return [PFUser currentUser].isAuthenticated ? 3 : 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -62,16 +70,93 @@
     if (section == 0)
         return 2;
     else if (section == 1)
-        return 5;
+        return 4;
     return 1;
+}
+
+- (NSString*)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
+{
+    if (section == 1)
+        return @"软件版本 1.0.0。以上所有功能演示用，均没有实现！";
+    return nil;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (!cell) {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                        reuseIdentifier:CellIdentifier] autorelease];
+    }
     
     // Configure the cell...
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.selectionStyle = UITableViewCellSelectionStyleGray;
+    //cell.backgroundView = nil;
+    cell.backgroundColor = [UIColor whiteColor];
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:16];
+    cell.textLabel.textAlignment = UITextAlignmentLeft;
+    cell.textLabel.textColor = [UIColor blackColor];
+    cell.textLabel.backgroundColor = [UIColor clearColor];
+    [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    
+    switch (indexPath.section) {
+        case 0:
+        {
+            switch (indexPath.row) {
+                case 0:
+                    cell.textLabel.text = @"我的帐号";
+                    break;
+                case 1:
+                    cell.textLabel.text = @"帐号绑定";
+                    break;
+                default:
+                    break;
+            }
+        }
+            break;
+        case 1:
+        {
+            switch (indexPath.row) {
+                case 0:
+                    cell.textLabel.text = @"通用";
+                    break;
+                case 1:
+                    cell.textLabel.text = @"推送通知";
+                    break;
+                case 2:
+                    cell.textLabel.text = @"意见反馈";
+                    break;
+                case 3:
+                    cell.textLabel.text = @"关于";
+                    break;
+                default:
+                    break;
+            }
+        }
+            break;
+        case 2:
+        {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            UIImageView *image = [[UIImageView alloc] initWithFrame:cell.contentView.bounds];
+            image.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+            image.image = [[UIImage imageNamed:@"orangeButton.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(17, 17, 17, 17)];
+            [cell.contentView insertSubview:image
+                               belowSubview:cell.textLabel];
+            [image release];
+            
+            cell.textLabel.text = @"退出登录";
+            cell.textLabel.font = [UIFont boldSystemFontOfSize:24];
+            cell.textLabel.textAlignment = UITextAlignmentCenter;
+            cell.textLabel.textColor = [UIColor whiteColor];
+            cell.textLabel.backgroundColor = [UIColor clearColor];
+        }
+            break;
+        default:
+            break;
+    }
     
     return cell;
 }
@@ -119,14 +204,13 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     [detailViewController release];
-     */
+    [tableView deselectRowAtIndexPath:indexPath
+                             animated:YES];
+    
+    if (indexPath.section == 2) {
+        [PFUser logOut];
+        [self.tableView reloadData];
+    }
 }
 
 @end
